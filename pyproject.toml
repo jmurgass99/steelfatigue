@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fatiguejm"
+version = "1.0.0"
+description = "Evaluacion de fatiga y rotura fragil en acero estructural (EN 1993-1-9 y 1-10)."
+requires-python = ">=3.10"
+authors = [{ name = "jesusm" }]
+dependencies = ["numpy>=1.24",
+    "fatpack>=0.7", "jmstructural-common"]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "pytest-timeout>=2.2",
+]
+api = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "pydantic>=2.5",
+]
+
+[tool.setuptools.packages.find]
+include = ["fatiguejm*"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+markers = [
+    "unit: pruebas unitarias rapidas",
+    "integration: pruebas de integracion",
+    "api: pruebas de endpoints REST",
+]
+
+[tool.coverage.run]
+source = ["fatiguejm"]
+branch = true
+omit = ["*/__pycache__/*", "*/_brand.py"]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+fail_under = 70
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.uv.sources]
+jmstructural-common = { workspace = true }
