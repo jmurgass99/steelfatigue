@@ -179,3 +179,190 @@ def test_palgrem_miner_falla_si_D_mayor_1():
         [{"stress_range_MPa": 200.0, "cycles": 3.0e6}], delta_sigma_c=71.0
     )
     assert res["total_damage"] > 1.0 and res["ok"] is False
+
+
+# --------------------------------------------------------------------------
+# Golden W01468 / W01469 — IPE 500 S355JR, examen UPC 2020-03-30 resuelto.
+# Dos fichas independientes (transcripciones distintas del mismo examen
+# manuscrito) dan resultados idénticos → cross-validación fuerte. Recalculado
+# a mano (mecánica de vigas M=P·a·b/L, σ=M/W) ANTES de anclar, no se detectó
+# errata: valores propios reproducen los de ambas fichas al decimal
+# (N_B≈13,811; N1,B=N2,B≈372,904; N2,C≈46,613; D_B≈0.40; D_C≈1.07).
+#
+# Viga biapoyada con voladizo, IPE 500 (W_el,y=1928.1 cm³), vano 4+4 m,
+# voladizo 2 m. Detalle crítico: rigidizador transversal, cat. Δσ_C=80 MPa,
+# γ_Mf=1.35 (integridad asegurada, consecuencias graves).
+# --------------------------------------------------------------------------
+_W_IPE500_mm3 = 1928.1e3
+_L_VANO_mm = 8000.0
+_L_VOLADIZO_mm = 2000.0
+
+
+def _momento_flector_vano(P_N: float) -> float:
+    # M = P·L/4 (carga central en vano biapoyado L=8m). P en N → M en N·mm.
+    return P_N * _L_VANO_mm / 4.0
+
+
+def _momento_flector_voladizo_en_B(P_N: float) -> float:
+    # M en apoyo B por carga P en el extremo del voladizo (brazo L_v/2 hasta B).
+    return P_N * _L_VOLADIZO_mm / 2.0
+
+
+def _momento_flector_voladizo_en_C(P_N: float) -> float:
+    # M en el empotramiento C (extremo voladizo) por carga P en D.
+    return P_N * _L_VOLADIZO_mm
+
+
+def test_ec3_1_9_seccion_B_cargas_alternadas_golden_W01468_W01469():
+    # P1=P2=200 kN alternadas: Δσ_R,B = σ_max,1,B + σ_max,2,B (rango completo).
+    P = 200_000.0  # N
+    sigma1_B = _momento_flector_vano(P) / _W_IPE500_mm3
+    sigma2_B = _momento_flector_voladizo_en_B(P) / _W_IPE500_mm3
+    assert sigma1_B == pytest.approx(207.46, abs=0.05)
+    assert sigma2_B == pytest.approx(103.73, abs=0.05)
+    delta_sigma_R_B = sigma1_B + sigma2_B
+    assert delta_sigma_R_B == pytest.approx(311.19, abs=0.05)
+
+    res = palmgren_miner_ec3(
+        [{"stress_range_MPa": delta_sigma_R_B, "cycles": 10_000.0}],
+        delta_sigma_c=80.0,
+        gamma_Mf=1.35,
+    )
+    N_B = res["blocks"][0]["N_i"]
+    # N ≈ 13,811 ciclos > 10,000 aplicados → VERIFICA (ficha: método integridad
+    # asegurada, mismo resultado que Palmgren-Miner con un único bloque D=n/N).
+    assert N_B == pytest.approx(13_811, rel=2e-3)
+    assert res["ok"] is True
+
+
+def test_ec3_1_9_palmgren_miner_seccion_B_verifica_golden_W01468_W01469():
+    # Cargas independientes: P1=100kN×100,000 ciclos + P2=200kN×50,000 ciclos.
+    # Ambas producen el mismo Δσ=103.73 MPa en B (P1 vía vano, P2 vía voladizo).
+    P1, P2 = 100_000.0, 200_000.0
+    sigma1_B = _momento_flector_vano(P1) / _W_IPE500_mm3
+    sigma2_B = _momento_flector_voladizo_en_B(P2) / _W_IPE500_mm3
+    assert sigma1_B == pytest.approx(103.73, abs=0.05)
+    assert sigma2_B == pytest.approx(103.73, abs=0.05)
+
+    res = palmgren_miner_ec3(
+        [
+            {"stress_range_MPa": sigma1_B, "cycles": 100_000.0},
+            {"stress_range_MPa": sigma2_B, "cycles": 50_000.0},
+        ],
+        delta_sigma_c=80.0,
+        gamma_Mf=1.35,
+    )
+    # Ficha: N1,B=N2,B≈372,894 → D_B=0.2682+0.1341=0.40 < 1.0 → VERIFICA.
+    assert res["blocks"][0]["N_i"] == pytest.approx(372_894, rel=2e-3)
+    assert res["blocks"][1]["N_i"] == pytest.approx(372_894, rel=2e-3)
+    assert res["total_damage"] == pytest.approx(0.40, abs=0.01)
+    assert res["ok"] is True
+
+
+def test_ec3_1_9_palmgren_miner_seccion_C_no_verifica_golden_W01468_W01469():
+    # Solo P2 actúa en C (P1 en el vano no genera momento en C por simetría).
+    # Caso NEGATIVO real (no arbitrario): la propia ficha muestra que la
+    # sección C SÍ falla mientras que B (misma categoría) no — discrimina
+    # falsos positivos de un check que ignore la sección crítica correcta.
+    P2 = 200_000.0
+    sigma2_C = _momento_flector_voladizo_en_C(P2) / _W_IPE500_mm3
+    assert sigma2_C == pytest.approx(207.46, abs=0.05)
+
+    res = palmgren_miner_ec3(
+        [{"stress_range_MPa": sigma2_C, "cycles": 50_000.0}],
+        delta_sigma_c=80.0,
+        gamma_Mf=1.35,
+    )
+    # Ficha: N2,C≈46,611 → D_C=1.07 > 1.0 → NO VERIFICA.
+    assert res["blocks"][0]["N_i"] == pytest.approx(46_611, rel=2e-3)
+    assert res["total_damage"] == pytest.approx(1.07, abs=0.01)
+    assert res["ok"] is False
+
+
+# --------------------------------------------------------------------------
+# Golden W01508 — Exercise 7b Fatigue and brittle fracture resolution.
+# Curva S-N invertida: despejar la carga P admisible para N=500,000 ciclos
+# dados (en vez de despejar N dado Δσ, como en los tests anteriores).
+# Recalculado a mano con la fórmula EC3-1-9 antes de anclar: ambos resultados
+# (P=376.3 kN, P=102.4 kN) se reproducen sin errata.
+# --------------------------------------------------------------------------
+def test_ec3_1_9_carga_admisible_cat80_golden_W01508():
+    # Soporte interno, cat. 80, γ_Mf=1.35, N=500,000, Δσ=2.50e-4·P (P en N).
+    P_kN = 376.3
+    delta_sigma = 2.50e-4 * (P_kN * 1000.0)
+    N = ec3_cycles_to_failure(delta_sigma, 80.0 / 1.35)
+    assert N == pytest.approx(500_000, rel=2e-3)
+
+
+def test_ec3_1_9_carga_admisible_cat36_domina_golden_W01508():
+    # Conexión a un lado, cat. 36 (domina el diseño frente a cat.80), mismo
+    # N=500,000, Δσ=4.133e-4·P.
+    P_kN = 102.4
+    delta_sigma = 4.133e-4 * (P_kN * 1000.0)
+    N = ec3_cycles_to_failure(delta_sigma, 36.0 / 1.35)
+    assert N == pytest.approx(500_000, rel=2e-3)
+    # La categoría 36 permite una carga muy inferior a la 80: confirma que
+    # domina el diseño (tal como concluye la ficha).
+    assert P_kN < 376.3
+
+
+# --------------------------------------------------------------------------
+# Golden W01407 — Problema fatiga 1. Discrimina un error de razonamiento
+# real documentado en la ficha (que selecciona el tramo m=3/m=5 según el
+# número de ciclos APLICADOS N₁, en vez de según la magnitud de Δσ frente a
+# Δσ_D — la ficha llega a sugerir "N₁=2.2e8 → pendiente m=5 aplica" aunque
+# Δσ₁ esté muy por encima del codo Δσ_D). Recalculado a mano: Δσ₁=67.61 MPa >
+# Δσ_D≈58.94 MPa (cat. 80) → el tramo correcto es m=3, SIEMPRE, sin importar
+# cuántos ciclos se apliquen. NO se ancla el resultado erróneo de la ficha
+# (m=5); se ancla el comportamiento correcto de `ec3_cycles_to_failure`
+# (selección por Δσ vs Δσ_D) frente a los datos de geometría/carga reales.
+# --------------------------------------------------------------------------
+def test_ec3_1_9_seleccion_tramo_por_tension_no_por_N_aplicado_golden_W01407():
+    W_mm3 = 3550e3
+    L_m, a_m = 6.0, 2.0
+    F1_kN = 180.0
+    M1_kNm = F1_kN * a_m * (L_m - a_m) / L_m  # = 240 kN·m (viga biapoyada, carga excéntrica)
+    delta_sigma1 = M1_kNm * 1e6 / W_mm3  # MPa
+    assert delta_sigma1 == pytest.approx(67.61, abs=0.05)
+
+    dc = 80.0
+    dD = constant_amplitude_limit(dc)
+    assert delta_sigma1 > dD  # por encima del codo → tramo m=3 obligatorio
+
+    N1 = ec3_cycles_to_failure(delta_sigma1, dc)
+    N1_m3_esperado = 2.0e6 * (dc / delta_sigma1) ** 3
+    assert N1 == pytest.approx(N1_m3_esperado, rel=1e-9)
+    assert N1 == pytest.approx(3.314e6, rel=1e-3)
+
+    # n1=2.2e8 ciclos aplicados (dato de la ficha) sobre N1≈3.31e6 → D≈66.4,
+    # falla ampliamente. El daño NO se reduce por usar m=5 solo porque
+    # n1 > 5e6: eso sería el razonamiento erróneo de la ficha.
+    res = palmgren_miner_ec3(
+        [{"stress_range_MPa": delta_sigma1, "cycles": 2.2e8}], delta_sigma_c=dc
+    )
+    assert res["total_damage"] == pytest.approx(66.4, rel=1e-2)
+    assert res["ok"] is False
+
+
+# --------------------------------------------------------------------------
+# Golden W01445 — Examen enero 2019, Pregunta 7 (V/F): "Daño acumulado
+# fatiga tiene en cuenta la secuencia de ciclos" → Falso. Palmgren-Miner es
+# independiente de la secuencia/orden de aplicación de los bloques.
+# --------------------------------------------------------------------------
+def test_ec3_1_9_miner_independiente_de_la_secuencia_golden_W01445():
+    bloque_a = {"stress_range_MPa": 90.0, "cycles": 2.0e5}
+    bloque_b = {"stress_range_MPa": 60.0, "cycles": 1.5e6}
+    bloque_c = {"stress_range_MPa": 120.0, "cycles": 3.0e4}
+
+    d_orden_1 = palmgren_miner_ec3(
+        [bloque_a, bloque_b, bloque_c], delta_sigma_c=90.0
+    )["total_damage"]
+    d_orden_2 = palmgren_miner_ec3(
+        [bloque_c, bloque_a, bloque_b], delta_sigma_c=90.0
+    )["total_damage"]
+    d_orden_3 = palmgren_miner_ec3(
+        [bloque_b, bloque_c, bloque_a], delta_sigma_c=90.0
+    )["total_damage"]
+
+    assert d_orden_1 == pytest.approx(d_orden_2, rel=1e-12)
+    assert d_orden_1 == pytest.approx(d_orden_3, rel=1e-12)
