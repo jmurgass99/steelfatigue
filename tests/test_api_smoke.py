@@ -18,7 +18,7 @@ def client() -> TestClient:
 
 
 def test_health_endpoint(client: TestClient):
-    r = client.get("/health")
+    r = client.get("/api/fatigue/health")
     assert r.status_code == 200
 
 
