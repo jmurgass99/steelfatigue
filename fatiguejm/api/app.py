@@ -102,7 +102,7 @@ def create_router() -> Any:
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
-    @router.post("/api/fatigue/evaluate")
+    @router.post("/api/fatigue/evaluate", summary="Evaluación de daño por fatiga acumulada según Palmgren-Miner (EN 1993-1-9)")
     def evaluate(payload: FatiguePayload) -> dict[str, Any]:
         try:
             data = FatigueInput(
@@ -118,21 +118,21 @@ def create_router() -> Any:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return result.to_dict()
 
-    @router.post("/api/fatigue/ufm")
+    @router.post("/api/fatigue/ufm", summary="Método de la fuerza unificada (UFM) para uniones y detalles de fatiga")
     def ufm(payload: UFMPayload) -> dict[str, Any]:
         try:
             return evaluate_ufm(UFMInput(**payload.model_dump())).to_dict()
         except ValidationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    @router.post("/api/fatigue/lowcycle")
+    @router.post("/api/fatigue/lowcycle", summary="Fatiga de bajo número de ciclos (LCF) según Coffin-Manson / Morrow")
     def lowcycle(payload: LowCyclePayload) -> dict[str, Any]:
         try:
             return evaluate_lowcycle(LowCycleInput(**payload.model_dump())).to_dict()
         except ValidationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    @router.post("/api/fatigue/hotspot")
+    @router.post("/api/fatigue/hotspot", summary="Cálculo de tensiones en puntos calientes (Hot-Spot Stresses) según IIW")
     def hotspot(payload: HotSpotPayload) -> dict[str, float]:
         from ..hotspot import HotSpotInput, hot_spot_stress
         try:
@@ -150,7 +150,7 @@ def create_router() -> Any:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return result.to_dict()
 
-    @router.post("/api/fatigue/paris")
+    @router.post("/api/fatigue/paris", summary="Propagación de fisuras por fatiga según ley de Paris-Erdogan")
     def paris(payload: ParisPayload) -> dict[str, Any]:
         """Crecimiento de grieta por ley de Paris (integración da/dN)."""
         from ..paris_law import ParisInput, integrate_paris
@@ -161,7 +161,7 @@ def create_router() -> Any:
         a_vs_N = r.a_vs_N.tolist() if hasattr(r.a_vs_N, "tolist") else list(r.a_vs_N)
         return {"N_cycles": r.N_cycles, "failure": r.failure, "a_vs_N": a_vs_N}
 
-    @router.post("/api/fatigue/mean-stress")
+    @router.post("/api/fatigue/mean-stress", summary="Corrección por tensión media en fatiga según Goodman, Gerber y Soderberg")
     def mean_stress(payload: MeanStressPayload) -> dict[str, Any]:
         """Corrección por tensión media (Goodman/Gerber/Soderberg)."""
         from ..mean_stress import (
@@ -188,7 +188,7 @@ def create_router() -> Any:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return {"sigma_equivalent_reversed_MPa": sigma_rev, "safety_factors": sf}
 
-    @router.post("/api/fatigue/endurance")
+    @router.post("/api/fatigue/endurance", summary="Límite de fatiga y curvas S-N bilineales según EN 1993-1-9 / IIW")
     def endurance(payload: EndurancePayload) -> dict[str, Any]:
         """Límite de fatiga corregido (factores de Marin ka·kb·kc·kd·ke)."""
         from ..endurance_factors import EnduranceInput, endurance_limit
