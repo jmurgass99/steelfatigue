@@ -188,7 +188,7 @@ def create_router() -> Any:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return {"sigma_equivalent_reversed_MPa": sigma_rev, "safety_factors": sf}
 
-    @router.post("/api/fatigue/endurance", summary="Límite de fatiga y curvas S-N bilineales según EN 1993-1-9 / IIW")
+    @router.post("/api/fatigue/endurance", summary="Límite de fatiga corregido por factores de Marin (Shigley) — superficie, tamaño, carga, temperatura, confiabilidad")
     def endurance(payload: EndurancePayload) -> dict[str, Any]:
         """Límite de fatiga corregido (factores de Marin ka·kb·kc·kd·ke)."""
         from ..endurance_factors import EnduranceInput, endurance_limit
