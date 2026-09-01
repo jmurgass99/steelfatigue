@@ -366,3 +366,78 @@ def test_ec3_1_9_miner_independiente_de_la_secuencia_golden_W01445():
 
     assert d_orden_1 == pytest.approx(d_orden_2, rel=1e-12)
     assert d_orden_1 == pytest.approx(d_orden_3, rel=1e-12)
+
+
+# --------------------------------------------------------------------------
+# Golden EN 1993-1-9 §7 — categoría de detalle Δσ_C = 90 MPa, curva completa.
+#
+# Oráculo: el TEXTO DE LA NORMA (EN 1993-1-9:2005 §7.1, Ec. 7.1 y Fig. 7.1), NO
+# la ejecución de `fatiguejm`. La categoría Δσ_C = 90 MPa figura en el catálogo
+# del propio paquete como 'FAT 90' (fatiguejm.wohler_db, atiesador transversal)
+# y NO estaba cubierta por los goldens anteriores de este fichero (que anclan
+# 160/112/80/71/50/36). Aquí se cierra la curva completa para Δσ_C = 90: codo,
+# cut-off y un punto en CADA tramo.
+#
+# DERIVACIÓN A MANO (EN 1993-1-9 §7.1, Fig. 7.1):
+#
+#   Δσ_C = 90 MPa a N_C = 2·10⁶ ciclos                          (definición)
+#
+#   1) Codo (límite de fatiga a amplitud constante), N_D = 5·10⁶:
+#        Δσ_D = Δσ_C·(N_C/N_D)^(1/3) = 90·(2/5)^(1/3)
+#             = 90·0.40^(0.333333) = 90·0.7368063 = 66.3126 MPa
+#
+#   2) Cut-off (límite de truncamiento) sobre la recta m=5, N_L = 10⁸:
+#        Δσ_L = Δσ_D·(N_D/N_L)^(1/5) = 66.3126·(5·10⁶/10⁸)^(1/5)
+#             = 66.3126·0.05^0.2 = 66.3126·0.5492803 = 36.4242 MPa
+#        (equivale a 0.40525·Δσ_C; NO a 0.549·Δσ_C)
+#
+#   3) Tramo m = 3 (Δσ ≥ Δσ_D). Nivel Δσ = 120 MPa > 66.3126 → aplica m=3:
+#        N = 2·10⁶·(90/120)³ = 2·10⁶·(0.75)³ = 2·10⁶·0.421875 = 843 750 ciclos
+#        (valor CERRADO y exacto: 0.75³ es racional, sin redondeo)
+#
+#   4) Tramo m = 5 (Δσ_L ≤ Δσ < Δσ_D). Nivel Δσ = 50 MPa, y en efecto
+#      36.4242 < 50 < 66.3126 → aplica m=5:
+#        N = 5·10⁶·(Δσ_D/50)⁵ = 5·10⁶·(66.3126/50)⁵ = 5·10⁶·(1.3262523)⁵
+#          = 5·10⁶·4.1032613 = 2.0516·10⁷ ciclos
+#        Forma cerrada equivalente: N = 5·10⁶·(90/50)⁵·0.4^(5/3).
+#        DISCRIMINACIÓN: una recta única m=3 daría 2·10⁶·(90/50)³ = 1.166·10⁷
+#        (≈ 43 % del valor trilineal) y un clamp a 10⁸ daría 10⁸ — ambos
+#        distintos del valor correcto.
+#
+# Estas cifras se derivaron a mano ANTES de ejecutar el código y coincidieron
+# con él hasta la precisión anclada: NO es un test de caracterización.
+# --------------------------------------------------------------------------
+def test_ec3_1_9_curva_completa_cat90_golden_norma():
+    # Se entra por el código FAT del catálogo del paquete (no por el literal),
+    # de modo que el golden ata también la entrada 'FAT 90' de wohler_db.
+    dc = "FAT 90"
+
+    # (1) Codo Δσ_D a N = 5·10⁶ — EN 1993-1-9 §7.1.
+    dD = constant_amplitude_limit(dc)
+    assert dD == pytest.approx(66.3126, abs=5e-5)
+
+    # (2) Cut-off Δσ_L a N = 10⁸ — EN 1993-1-9 §7.1.
+    dL = cutoff_limit(dc)
+    assert dL == pytest.approx(36.4242, abs=5e-5)
+
+    # (3) Tramo m=3: Δσ = 120 MPa → N = 843 750 ciclos (exacto).
+    assert 120.0 > dD
+    assert ec3_cycles_to_failure(120.0, dc) == pytest.approx(843_750.0, abs=0.5)
+
+    # (4) Tramo m=5: Δσ = 50 MPa (estrictamente entre Δσ_L y Δσ_D).
+    assert dL < 50.0 < dD
+    N50 = ec3_cycles_to_failure(50.0, dc)
+    assert N50 == pytest.approx(2.0516e7, rel=5e-5)
+    # Discrimina frente a recta única m=3 (1.166·10⁷) y frente a clamp a 10⁸.
+    assert N50 > 1.7 * 1.166e7
+    assert N50 < EC3_N_CUTOFF
+
+
+def test_ec3_1_9_cat90_puntos_de_definicion_de_la_curva():
+    """Los dos vértices caen exactamente sobre 5·10⁶ y 10⁸ (Fig. 7.1)."""
+    dc = 90.0
+    assert ec3_cycles_to_failure(dc, dc) == pytest.approx(2.0e6, rel=1e-9)
+    assert ec3_cycles_to_failure(66.3126, dc) == pytest.approx(5.0e6, rel=1e-4)
+    assert ec3_cycles_to_failure(36.4242, dc) == pytest.approx(1.0e8, rel=1e-4)
+    # Justo por debajo del cut-off derivado a mano: vida infinita (sin daño).
+    assert ec3_cycles_to_failure(36.4, dc) == math.inf
