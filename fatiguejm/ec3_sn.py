@@ -155,7 +155,11 @@ def palmgren_miner_ec3(
     total_D = 0.0
     for blk in spectrum:
         ds = float(blk["stress_range_MPa"])
-        n = float(blk.get("cycles", 0.0))
+        # 'cycles' se exige con el MISMO rigor que 'stress_range_MPa'. Con
+        # .get(..., 0.0) un bloque sin ciclos aportaba dano 0.0 y desaparecia
+        # del sumatorio, ademas de reportarse con `cycles: 0.0` — un numero que
+        # el usuario nunca dio. Un 0.0 declarado explicitamente sigue valiendo.
+        n = float(blk["cycles"])
         N = ec3_cycles_to_failure(ds, dc_design)
         d = n / N if math.isfinite(N) and N > 0 else 0.0
         total_D += d

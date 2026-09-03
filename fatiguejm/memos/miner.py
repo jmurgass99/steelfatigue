@@ -14,6 +14,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from ..exceptions import DetailCategoryError
+
 try:
     from handcalcs.decorator import handcalc
     _HAS_HANDCALCS = True
@@ -79,7 +81,27 @@ def _n_endurance(delta_sigma: float, delta_sigma_c_d: float) -> float:
 
 
 def render_miner_memo(data: MinerMemoInput) -> MinerMemoResult:
-    """Genera la memoria. Devuelve resultado + LaTeX + Markdown."""
+    """Genera la memoria. Devuelve resultado + LaTeX + Markdown.
+
+    :raises DetailCategoryError: si ``detail_category`` o ``gamma_mf`` <= 0.
+
+    Con una categoria de detalle nula o negativa la resistencia de diseno es
+    <= 0, :func:`_n_endurance` devolvia N = 0 y el guardia ``if N > 0 else 0.0``
+    convertia esa capacidad NULA en dano CERO: D = 0 -> ``pass_check=True`` ->
+    la cadena ``"✅ PASS"`` impresa en una memoria firmada. La misma validacion
+    ya existia en :mod:`fatiguejm.services.fatigue_service` y en
+    ``HSRFatigueJm.en1993_sn_N`` (que lanza con ``delta_sigma_C <= 0``).
+    """
+    if data.detail_category <= 0:
+        raise DetailCategoryError(
+            f"detail_category debe ser > 0 (recibido {data.detail_category}): "
+            "resistencia a fatiga nula no puede rendir una memoria PASS."
+        )
+    if data.gamma_mf <= 0:
+        raise DetailCategoryError(
+            f"gamma_mf debe ser > 0 (recibido {data.gamma_mf})"
+        )
+
     delta_sigma_c_d = data.detail_category / data.gamma_mf
 
     blocks: list[BlockBreakdown] = []
@@ -90,7 +112,10 @@ def render_miner_memo(data: MinerMemoInput) -> MinerMemoResult:
         ds = float(blk["stress_range_MPa"])
         n = float(blk["cycles"])
         N = _n_endurance(ds, delta_sigma_c_d)
-        d = n / N if N > 0 else 0.0
+        # N == inf (Δσ <= 0, sin dano) -> n/inf = 0.0, que es el limite correcto.
+        # N <= 0 es capacidad NULA: dano INFINITO, jamas 0.0. Inalcanzable tras
+        # validar detail_category > 0, pero se deja explicito y ruidoso.
+        d = n / N if N > 0 else float("inf")
         blocks.append(BlockBreakdown(label=label, stress_range_MPa=ds,
                                       cycles=n, N_endurance=N, damage=d))
         total_D += d

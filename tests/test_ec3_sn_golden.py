@@ -181,6 +181,26 @@ def test_palgrem_miner_falla_si_D_mayor_1():
     assert res["total_damage"] > 1.0 and res["ok"] is False
 
 
+def test_palgrem_miner_bloque_sin_cycles_rechazado():
+    """Las dos claves del bloque deben exigirse con el MISMO rigor.
+
+    `stress_range_MPa` se leia con indexacion directa (KeyError si falta) pero
+    `cycles` con .get(..., 0.0): un bloque sin ciclos desaparecia del sumatorio
+    de Miner con dano 0.0 y ademas se reportaba con `cycles: 0.0`, un numero
+    que el usuario nunca dio.
+    """
+    with pytest.raises(KeyError):
+        palmgren_miner_ec3([{"stress_range_MPa": 200.0}], delta_sigma_c=80.0)
+
+
+def test_palgrem_miner_cycles_cero_explicito_sigue_valiendo():
+    """Un 0.0 declarado SI es un dato: cero ciclos, cero dano, sin excepcion."""
+    res = palmgren_miner_ec3(
+        [{"stress_range_MPa": 200.0, "cycles": 0.0}], delta_sigma_c=80.0
+    )
+    assert res["total_damage"] == 0.0
+
+
 # --------------------------------------------------------------------------
 # Golden W01468 / W01469 — IPE 500 S355JR, examen UPC 2020-03-30 resuelto.
 # Dos fichas independientes (transcripciones distintas del mismo examen

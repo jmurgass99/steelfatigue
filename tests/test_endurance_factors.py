@@ -1,6 +1,7 @@
 """Factores de Marin + efecto espesor — validado contra Shigley / EN 1993-1-9."""
 import pytest
 
+from fatiguejm.exceptions import ValidationError
 from fatiguejm.endurance_factors import (
     EnduranceInput,
     Se_prime,
@@ -47,6 +48,18 @@ class TestKcKdKe:
         assert kc_load("bending") == 1.0
         assert kc_load("axial") == 0.85
         assert kc_load("torsion") == 0.59
+
+    def test_kc_load_desconocido_rechazado(self):
+        """Una carga desconocida NO puede degradar al factor mas favorable.
+
+        kc_load devolvia 1.0 (sin reduccion) ante cualquier cadena no tabulada,
+        mientras ka_surface —su hermana en el mismo modulo— si lanza. Un typo
+        como 'axail' pasaba de kc=0.85 a kc=1.0 y sobreestimaba Se un 18%.
+        """
+        with pytest.raises(ValidationError):
+            kc_load("axail")
+        with pytest.raises(ValidationError):
+            kc_load("tension")
 
     def test_kd_ambiente(self):
         assert kd_temperature(20.0) == pytest.approx(1.0, abs=0.01)

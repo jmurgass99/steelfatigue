@@ -1,6 +1,7 @@
 """
 sn_curves.py - S-N Curves and Cumulative Damage Evaluation based on EN 1993-1-9.
 """
+from .exceptions import DetailCategoryError, SpectrumError
 from .rainflow_fatpack import rainflow_count_arrays, _HAS_FATPACK
 
 
@@ -12,7 +13,26 @@ class FatigueEvaluator:
         """
         :param detail_category: Detail category (Delta Sigma C in MPa), e.g., 71, 80, 90, 112.
         :param gamma_mf: Partial safety factor for fatigue strength.
+        :raises DetailCategoryError: if ``detail_category`` or ``gamma_mf`` <= 0.
+
+        A non-positive detail category is ZERO fatigue resistance. Left
+        unvalidated it made ``calculate_endurance`` return N <= 0, which the
+        ``if n_capacity > 0`` guard in :meth:`calculate_damage` silently skipped
+        -> D = 0.0 -> ``"status": "PASS"`` and ``"Fatigue life is adequate"``.
+        The same validation already lived in
+        :mod:`fatiguejm.services.fatigue_service`; it belongs here too, because
+        this class is public and usable directly.
         """
+        if detail_category <= 0:
+            raise DetailCategoryError(
+                f"detail_category debe ser > 0 (recibido {detail_category}): "
+                "una categoria de detalle nula o negativa es resistencia a "
+                "fatiga NULA y no puede producir un veredicto PASS."
+            )
+        if gamma_mf <= 0:
+            raise DetailCategoryError(
+                f"gamma_mf debe ser > 0 (recibido {gamma_mf})"
+            )
         self.detail_category = detail_category
         self.gamma_mf = gamma_mf
         
@@ -40,16 +60,37 @@ class FatigueEvaluator:
         Calculates Palmgren-Miner cumulative damage.
         :param stress_spectrum: List of dicts [{'stress_range': 80, 'cycles': 100000}, ...]
         :return: Damage factor D. If D > 1.0, failure occurs.
+        :raises SpectrumError: if a block omits 'stress_range' or 'cycles'.
+
+        Both keys are REQUIRED. They used to be read with ``.get(key, 0)``, so a
+        block missing either one contributed zero damage and vanished from the
+        sum without a trace: a missing stress range became "0 MPa" (N = inf) and
+        a missing cycle count became "0 cycles". An absent datum is not a zero.
+        An explicit 0.0 supplied by the caller IS a datum and is still accepted.
         """
         total_damage = 0.0
-        for block in stress_spectrum:
-            sigma = block.get('stress_range', 0)
-            n_applied = block.get('cycles', 0)
-            
+        for i, block in enumerate(stress_spectrum):
+            for key in ('stress_range', 'cycles'):
+                if key not in block:
+                    raise SpectrumError(
+                        f"bloque {i} del espectro sin la clave '{key}': "
+                        f"{block!r}. Un dato ausente no es un cero; declara el "
+                        "valor explicitamente si de verdad vale 0."
+                    )
+            sigma = block['stress_range']
+            n_applied = block['cycles']
+
             n_capacity = self.calculate_endurance(sigma)
-            if n_capacity > 0:
-                total_damage += n_applied / n_capacity
-                
+            if n_capacity <= 0:
+                # Inalcanzable tras validar detail_category > 0 en __init__.
+                # Se deja ruidoso a proposito: una capacidad nula es dano
+                # INFINITO, nunca dano cero.
+                raise SpectrumError(
+                    f"bloque {i}: capacidad nula o negativa (N={n_capacity}) "
+                    f"para stress_range={sigma}; el dano seria infinito."
+                )
+            total_damage += n_applied / n_capacity
+
         return total_damage
 
     def count_rainflow_fatpack(self, stress_history):

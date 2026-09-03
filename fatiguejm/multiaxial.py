@@ -41,7 +41,15 @@ def cycles_to_failure_swt(inp: SWTInput,
     lo, hi = 0.5, N_max
     f_lo, f_hi = f(lo), f(hi)
     if f_lo * f_hi > 0:
-        return float("inf") if P_target < f_hi else 0.0
+        # Sin cambio de signo no hay raíz en [lo, hi]. f es DECRECIENTE en N,
+        # así que el signo común decide:
+        #   f_hi > 0 -> la capacidad supera la demanda incluso en N_max: run-out
+        #               (vida infinita).
+        #   f_hi < 0 -> la demanda supera la capacidad ya en N=0.5: vida nula.
+        # El test anterior comparaba `P_target < f_hi`, dos magnitudes distintas
+        # (una demanda contra un residuo), y devolvía el literal 0.0 —vida
+        # NULA— para casos de vida INFINITA.
+        return float("inf") if f_hi > 0 else 0.0
     for _ in range(200):
         mid = (lo + hi) / 2.0
         f_mid = f(mid)
@@ -65,7 +73,15 @@ def critical_plane_search(stress_history: dict[str, list[float]],
     syy = np.asarray(stress_history.get("syy", []))
     sxy = np.asarray(stress_history.get("sxy", []))
     if sxx.size == 0:
-        return {"theta_rad": 0.0, "sigma_max": 0.0, "eps_a": 0.0}
+        # Antes devolvía sigma_max = 0.0 y eps_a = 0.0 (y sin la clave P_SWT):
+        # una historia de tensiones AUSENTE se leía como "no hay demanda de
+        # fatiga", P_SWT = 0 -> vida infinita. La ausencia se propaga como
+        # ausencia, no como un cero tranquilizador.
+        raise ValueError(
+            "stress_history sin componente 'sxx' (o vacía): no hay historia de "
+            "tensiones sobre la que buscar el plano crítico. Sin datos no hay "
+            "resultado; un plano con sigma_max=0 sería una demanda inventada."
+        )
     best = {"theta_rad": 0.0, "P_SWT": 0.0,
              "sigma_max": 0.0, "eps_a": 0.0}
     for theta in angles:

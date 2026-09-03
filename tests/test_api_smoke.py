@@ -68,6 +68,42 @@ def test_missing_required_field_yields_422(client: TestClient):
     assert r.status_code == 422
 
 
+# --------------------------------------------------------------------------- #
+# Un dato invalido debe ser 422 (culpa del cliente), NUNCA 500.
+#
+# Los handlers de /endurance y /mean-stress solo capturaban ValueError, pero el
+# codigo que invocan lanza fatiguejm.exceptions.ValidationError, que NO hereda de
+# ValueError: escapaba como 500. Ya ocurria con `finish` desconocido (ka_surface
+# siempre lanzo) y con Soderberg sin Sy; al dejar de devolver kc=1.0 en silencio
+# para una carga desconocida, `loading` se sumo al mismo camino.
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize(
+    "payload",
+    [
+        pytest.param({"Su_MPa": 690.0, "loading": "axail"}, id="loading-desconocido"),
+        pytest.param({"Su_MPa": 690.0, "finish": "polished"}, id="finish-desconocido"),
+    ],
+)
+def test_endurance_entrada_invalida_es_422_no_500(client: TestClient, payload):
+    r = client.post("/api/fatigue/endurance", json=payload)
+    assert r.status_code == 422, r.text
+
+
+def test_mean_stress_soderberg_sin_Sy_es_422_no_500(client: TestClient):
+    r = client.post(
+        "/api/fatigue/mean-stress",
+        json={"sigma_a_MPa": 50.0, "sigma_m_MPa": 100.0,
+              "Se_MPa": 200.0, "Su_MPa": 600.0, "criterion": "soderberg"},
+    )
+    assert r.status_code == 422, r.text
+
+
+def test_endurance_entrada_valida_sigue_200(client: TestClient):
+    r = client.post("/api/fatigue/endurance",
+                    json={"Su_MPa": 690.0, "loading": "axial", "finish": "machined"})
+    assert r.status_code == 200, r.text
+
+
 def test_create_router_exposes_routes():
     router = create_router()
     paths = {r.path for r in router.routes if hasattr(r, "path")}

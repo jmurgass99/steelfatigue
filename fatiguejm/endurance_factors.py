@@ -71,9 +71,26 @@ def kb_size(d_mm: float, loading: str = "bending", rotating: bool = True) -> flo
     return 1.51 * d_mm ** -0.157
 
 
+_LOAD_KC = {"bending": 1.0, "axial": 0.85, "torsion": 0.59}
+
+
 def kc_load(loading: str = "bending") -> float:
-    """Factor de tipo de carga kc (Shigley Eq 6-26): flexión 1, axial 0.85, torsión 0.59."""
-    return {"bending": 1.0, "axial": 0.85, "torsion": 0.59}.get(loading.lower(), 1.0)
+    """Factor de tipo de carga kc (Shigley Eq 6-26): flexión 1, axial 0.85, torsión 0.59.
+
+    :raises ValidationError: si ``loading`` no es uno de los tres tabulados.
+
+    Antes devolvía 1.0 —el factor MÁS FAVORABLE, sin reducción— para cualquier
+    cadena no tabulada, mientras :func:`ka_surface`, en este mismo módulo, sí
+    lanza ante un acabado desconocido (y :func:`fatiguejm.corrosion.adjusted_FAT`
+    y :func:`fatiguejm.notch_stress.notch_stress` hacen lo propio). Un simple
+    typo ('axail') pasaba kc de 0.85 a 1.0 y sobreestimaba Se un 18%.
+    """
+    key = loading.lower()
+    if key not in _LOAD_KC:
+        raise ValidationError(
+            "tipo de carga desconocido: %s (válidos: %s)" % (loading, sorted(_LOAD_KC))
+        )
+    return _LOAD_KC[key]
 
 
 def kd_temperature(T_C: float) -> float:

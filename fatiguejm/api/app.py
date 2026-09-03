@@ -184,7 +184,10 @@ def create_router() -> Any:
                 sigma_a_MPa=payload.sigma_a_MPa, sigma_m_MPa=payload.sigma_m_MPa,
                 Se_MPa=payload.Se_MPa, Su_MPa=payload.Su_MPa, Sy_MPa=payload.Sy_MPa,
             ))
-        except ValueError as exc:
+        # ValidationError (fatiguejm) NO hereda de ValueError: sin capturarla
+        # explicitamente, un criterio desconocido o Soderberg sin Sy escapaban
+        # como 500 en vez de 422.
+        except (ValueError, ValidationError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return {"sigma_equivalent_reversed_MPa": sigma_rev, "safety_factors": sf}
 
@@ -194,7 +197,10 @@ def create_router() -> Any:
         from ..endurance_factors import EnduranceInput, endurance_limit
         try:
             return endurance_limit(EnduranceInput(**payload.model_dump()))
-        except ValueError as exc:
+        # `finish` y `loading` son cadenas libres en el payload y las valida el
+        # dominio con ValidationError, que NO hereda de ValueError: un acabado o
+        # una carga desconocidos daban 500 en vez de 422.
+        except (ValueError, ValidationError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     return router
