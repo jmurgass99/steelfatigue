@@ -1,95 +1,120 @@
 # FatigueJm
 
-Analisis de fatiga estructural
+Evaluación de fatiga y rotura frágil en acero estructural según **EN 1993-1-9** y **EN 1993-1-10**, con conteo rainflow, acumulación de daño Palmgren-Miner, fatiga oligocíclica, tensión de punto caliente y propagación de grieta.
 
 [![CI](https://github.com/jmurgass99/fatiguejm/actions/workflows/ci.yml/badge.svg)](https://github.com/jmurgass99/fatiguejm/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-71.43%25-green?style=flat)](https://github.com/jmurgass99/fatiguejm)
-[![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Proprietary-red)]()
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## Overview
+Paquete Python puro e independiente: solo depende de `numpy` y `fatpack`.
 
-Analisis de fatiga estructural. Parte del ecosistema **jmurgass99** de herramientas de ingenieria estructural.
+## Instalación
 
-## Installation
+```bash
+pip install git+https://github.com/jmurgass99/fatiguejm.git
+```
+
+Extras opcionales:
+
+```bash
+pip install "fatiguejm[api] @ git+https://github.com/jmurgass99/fatiguejm.git"    # REST API (FastAPI)
+pip install "fatiguejm[memos] @ git+https://github.com/jmurgass99/fatiguejm.git"  # memorias de cálculo (handcalcs)
+```
+
+Para desarrollo:
 
 ```bash
 git clone https://github.com/jmurgass99/fatiguejm.git
 cd fatiguejm
-pip install -e .
-# Optional extras:
-pip install -e ".[test,api]"
+pip install -e ".[test,api,memos]"
+pytest -q
 ```
 
-## Quick start
+## Inicio rápido
+
+### Daño Palmgren-Miner con la curva trilineal EN 1993-1-9 §7
+
+Ejemplo clásico: viga IPE 240, categoría de detalle 80, método *safe-life* (γ_Mf = 1,15).
 
 ```python
-from fatiguejm import *  # see examples/ for usage
+from fatiguejm.ec3_sn import palmgren_miner_ec3
+
+spectrum = [
+    {"stress_range_MPa": 75.16, "cycles": 1.0e6},
+    {"stress_range_MPa": 8.67, "cycles": 2.0e6},   # por debajo del cut-off: no daña
+]
+res = palmgren_miner_ec3(spectrum, detail=80, gamma_Mf=1.15)
+
+print(res["total_damage"])   # 0.63  -> D <= 1.0, OK
+print(res["ok"])             # True
+print(res["blocks"][0]["N_i"])  # 1.59e6 ciclos resistentes
 ```
 
-## REST API (if available)
+La curva implementa los tres tramos del Eurocódigo: pendiente m = 3 hasta el límite de amplitud constante Δσ_D (N = 5·10⁶), pendiente m = 5 hasta el cut-off Δσ_L (N = 10⁸) y daño nulo por debajo. El factor parcial γ_Mf se aplica una sola vez, sobre la resistencia de diseño Δσ_C / γ_Mf.
+
+### Ciclos resistentes para un rango de tensión
+
+```python
+from fatiguejm.ec3_sn import ec3_cycles_to_failure, constant_amplitude_limit, cutoff_limit
+
+ec3_cycles_to_failure(100.0, detail=112)   # N para Δσ = 100 MPa, FAT 112
+constant_amplitude_limit(112)              # Δσ_D ≈ 82.5 MPa
+cutoff_limit(112)                          # Δσ_L ≈ 45.3 MPa
+```
+
+### Conteo rainflow (ASTM E1049) de un historial de tensiones
+
+```python
+from fatiguejm.rainflow_fatpack import rainflow_count
+
+history = [0, 80, -20, 60, 10, 90, -40, 0]
+for c in rainflow_count(history):
+    print(c.range, c.mean, c.count)   # rango, media y nº de ciclos (0.5 = semiciclo)
+```
+
+### Corrección por tensión media
+
+```python
+from fatiguejm.mean_stress import equivalent_reversed_stress
+
+equivalent_reversed_stress(sigma_a=60.0, sigma_m=40.0, Su=490.0, criterion="goodman")   # 65.33 MPa
+```
+
+## Módulos
+
+| Módulo | Contenido |
+|---|---|
+| `ec3_sn` | Curva S-N trilineal EN 1993-1-9 §7 y Palmgren-Miner con γ_Mf |
+| `ec3_brittle_fracture` | Selección de tenacidad y espesor máximo, EN 1993-1-10 |
+| `wohler_db` | Catálogo de categorías de detalle (FAT) |
+| `sn_curves`, `sn_curves_multi` | Curvas S-N de pendiente única (AISC / AS / ASME) |
+| `rainflow_fatpack` | Conteo rainflow sobre `fatpack` |
+| `variable_amplitude` | Daño acumulado desde historial o ciclos contados |
+| `mean_stress` | Goodman, Gerber y Soderberg |
+| `hotspot` | Tensión de punto caliente (extrapolación lineal y cuadrática, IIW) |
+| `notch_stress` | Tensión de entalla (IIW tipo c) |
+| `lowcycle` | Fatiga oligocíclica Coffin-Manson |
+| `multiaxial` | Criterios multiaxiales |
+| `paris_law` | Integración de la ley de Paris (propagación de grieta) |
+| `endurance_factors` | Factores de corrección del límite de fatiga |
+| `corrosion` | Curvas S-N modificadas por corrosión |
+| `gusset_rbs` | Método de Fuerza Uniforme en cartelas y daño en RBS |
+| `services/` | Capa de servicio con funciones puras |
+| `api/` | REST API con FastAPI (extra `api`) |
+| `memos/` | Memorias de cálculo paso a paso con handcalcs (extra `memos`) |
+
+## REST API
 
 ```bash
+pip install -e ".[api]"
 uvicorn fatiguejm.api.app:app --reload
-# Open http://localhost:8000/docs
+# http://localhost:8000/docs
 ```
 
-## Testing
+## Validación
 
-```bash
-pytest -q                                # quick suite
-pytest -m "not slow"                     # exclude slow tests
-.\scripts\run_coverage.ps1               # coverage with gate
-```
+Los tests golden de `ec3_sn` y `ec3_brittle_fracture` anclan los resultados a ejemplos resueltos a mano según EN 1993-1-9 (codo Δσ_D y cut-off Δσ_L tabulados, ejemplo Miner con γ_Mf = 1,15), no a reejecuciones de la propia función. El conteo rainflow se valida contra el ejemplo de ASTM E1049. Consulta `docs/QC_CHECKLIST.md` para el alcance de lo verificado.
 
-## Project structure
+## Licencia
 
-```
-fatiguejm/
-  services/       # service layer (pure functions)
-  api/            # FastAPI app (REST endpoints)
-  exceptions.py   # typed exception hierarchy
-  _brand.py       # brand constants
-tests/            # pytest suite
-```
-
-## Ecosystem
-
-This project is part of the **jmurgass99 structural engineering ecosystem**:
-
-- [fastsap](https://github.com/jmurgass99/fastsap) - orquestador SAP2000/ETABS
-- [dynamicsjmpro](https://github.com/jmurgass99/dynamicsjmpro) - SaaS frontend + backend
-- [dynamicsjm](https://github.com/jmurgass99/dynamicsjm) - motor dinamico
-- [foundationdesignjm](https://github.com/jmurgass99/foundationdesignjm) - cimentaciones
-- [windloadjm](https://github.com/jmurgass99/windloadjm) - cargas de viento
-- [seismicrecordsjm](https://github.com/jmurgass99/seismicrecordsjm) - records sismicos
-- [slopestabilityjm](https://github.com/jmurgass99/slopestabilityjm) - estabilidad de taludes
-- [steelconnectionjm](https://github.com/jmurgass99/steelconnectionjm) - conexiones de acero
-- [steeloptimizerjm](https://github.com/jmurgass99/steeloptimizerjm) - optimizacion GA
-- [coldformedjm](https://github.com/jmurgass99/coldformedjm) - acero conformado en frio
-- [fatiguejm](https://github.com/jmurgass99/fatiguejm) - analisis de fatiga
-- [firesteeljm](https://github.com/jmurgass99/firesteeljm) - analisis termico al fuego
-- [dxfstructuraljm](https://github.com/jmurgass99/dxfstructuraljm) - generacion DXF
-
-
-## Master IEG Integrations
-
-Modulo `fatiguejm.gusset_rbs` (integrado 2026-05-19 desde
-`NEW CODES/STRUCTURAL/Master_IEG_Integrations/fatigue_gusset_rbs.py`):
-
-- `FatigueGussetUFM` — Metodo de Fuerza Uniforme (IEG 3240) para fuerzas
-  en interfaces viga/columna/gusset. Salida lista para combinar con SCF
-  + curvas S-N de `sn_curves_multi`.
-- `FatigueRBS.calculate_oligocyclic_damage` — dano Coffin-Manson
-  (Engelhardt) sobre historial de rotaciones plasticas. Complementa
-  `fatiguejm.lowcycle`.
-
-```python
-from fatiguejm.gusset_rbs import FatigueGussetUFM, FatigueRBS
-g = FatigueGussetUFM(alpha=15, beta=20, ec=5, eb=5)
-print(g.calculate_interface_forces(P_brace=1000, theta=0.785))
-```
-
-## License
-
-Proprietary - (c) 2026 jmurgass99. All rights reserved.
+MIT. Consulta [LICENSE](LICENSE).

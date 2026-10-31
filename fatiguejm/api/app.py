@@ -169,7 +169,7 @@ def create_router() -> Any:
             equivalent_reversed_stress,
             safety_factors,
         )
-        from jmstructural_common.validation import require_in
+        from ..validation import require_in
         try:
             crit = require_in(
                 payload.criterion.lower(),

@@ -5,11 +5,27 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fatiguejm"
 version = "1.0.0"
-description = "Evaluacion de fatiga y rotura fragil en acero estructural (EN 1993-1-9 y 1-10)."
+description = "Evaluación de fatiga y rotura frágil en acero estructural (EN 1993-1-9 y EN 1993-1-10)."
+readme = "README.md"
 requires-python = ">=3.10"
-authors = [{ name = "jesusm" }]
-dependencies = ["numpy>=1.24",
-    "fatpack>=0.7", "jmstructural-common"]
+license = { text = "MIT" }
+authors = [{ name = "Jesús Murga" }]
+keywords = ["fatigue", "structural-engineering", "eurocode", "EN-1993-1-9", "rainflow", "palmgren-miner", "steel"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy>=1.24",
+    "fatpack>=0.7",
+]
 
 [project.optional-dependencies]
 test = [
@@ -21,7 +37,16 @@ api = [
     "fastapi>=0.110",
     "uvicorn>=0.27",
     "pydantic>=2.5",
+    "httpx>=0.27",
 ]
+memos = [
+    "handcalcs>=1.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/jmurgass99/fatiguejm"
+Repository = "https://github.com/jmurgass99/fatiguejm"
+Issues = "https://github.com/jmurgass99/fatiguejm/issues"
 
 [tool.setuptools.packages.find]
 include = ["fatiguejm*"]
@@ -51,6 +76,3 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
 ]
-
-[tool.uv.sources]
-jmstructural-common = { workspace = true }
