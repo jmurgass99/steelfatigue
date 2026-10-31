@@ -65,14 +65,18 @@ def rainflow_count(stress_history):
         rng = abs(high - low)
         mean = (high + low) / 2
         out.append(RainflowCycle(mean=float(mean), range=float(rng), count=1.0))
-    # residue: semi-ciclos sin cerrar
+    # residue: inversiones sin cerrar. ASTM E1049-85 §5.4.4 cuenta CADA tramo
+    # consecutivo del residuo como un semiciclo: n puntos -> n-1 semiciclos.
+    # (Antes se recorria de dos en dos y se perdia uno de cada dos tramos,
+    # entre ellos el de mayor rango de la senal: en el ejemplo del estandar
+    # se contaban 2,5 ciclos en vez de 4,0 y desaparecia el rango 9.)
     # fatpack puede devolver residue 2-D (row0=valores, row1=indices)
     if len(residue) >= 2:
         rev_res = np.asarray(residue, dtype=float)
         if rev_res.ndim == 2:
             rev_res = rev_res[0]          # quedarnos solo con los valores
         n_res = rev_res.shape[0]
-        for i in range(0, n_res - 1, 2):
+        for i in range(0, n_res - 1):
             a, b = float(rev_res[i]), float(rev_res[i + 1])
             low, high = (a, b) if a <= b else (b, a)
             out.append(RainflowCycle(

@@ -245,9 +245,12 @@ class CoffinMansonRBS:
             )
 
         strain = arr * self.params.geometric_factor
-        nf = np.where(strain > 0,
-                      0.5 * (strain / self.params.eps_f) ** (1.0 / self.params.c),
-                      np.inf)
+        # np.where evalúa las dos ramas: para strain = 0 la potencia negativa
+        # dispara un aviso de división por cero aunque el resultado se descarte.
+        with np.errstate(divide="ignore"):
+            nf = np.where(strain > 0,
+                          0.5 * (strain / self.params.eps_f) ** (1.0 / self.params.c),
+                          np.inf)
         damage = float(np.sum(1.0 / nf))
 
         if damage >= 1.0:
