@@ -1,0 +1,10 @@
+S355JR, T₀ = -35 °C → T_Ed = −40 °C
+
+Elemento                     t   σ_Ed  ratio  t_max  veredicto
+Ala viga carrilera          16    207  0.590   21.4  OK
+Platabanda inferior         22    185  0.529   23.8  OK
+Chapa de nudo celosía       25    180  0.516   24.4  NO VERIFICA
+Alma del pilar              12    230  0.653   18.9  OK
+Cartela de apoyo            30    150  0.432      —  fuera de los puntos de tabla
+
+3 verifican, 1 no verifican, 1 sin veredicto por falta de puntos de tabla.

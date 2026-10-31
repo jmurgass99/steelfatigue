@@ -1,0 +1,13 @@
+Vida requerida N = 500,000 ciclos, γ_Mf = 1.35
+
+Apoyo interior, soldadura transversal (cat. 80)
+  Δσ_C,d = 59.26 MPa, codo Δσ_D,d = 43.66 MPa
+  Δσ admisible = 94.07 MPa (tramo m = 3); forma cerrada m=3: 94.07 MPa
+  P admisible  = 376.3 kN
+
+Conexión a un solo lado (cat. 36)
+  Δσ_C,d = 26.67 MPa, codo Δσ_D,d = 19.65 MPa
+  Δσ admisible = 42.33 MPa (tramo m = 3); forma cerrada m=3: 42.33 MPa
+  P admisible  = 102.4 kN
+
+Gobierna la categoría 36: P = 102.4 kN frente a 376.3 kN (27% de la carga del detalle de categoría 80).

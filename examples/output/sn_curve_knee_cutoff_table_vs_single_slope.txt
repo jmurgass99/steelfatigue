@@ -1,0 +1,19 @@
+     FAT  Δσ_D [MPa]  Δσ_L [MPa] |  Δσ=0,9·Δσ_D  N trilineal  N recta m=3  ratio
+----------------------------------------------------------------------------------
+ FAT 160       117.9        64.8 |        106.1    8.468e+06    6.859e+06   1.23
+ FAT 140       103.2        56.7 |         92.8    8.468e+06    6.859e+06   1.23
+ FAT 125        92.1        50.6 |         82.9    8.468e+06    6.859e+06   1.23
+ FAT 112        82.5        45.3 |         74.3    8.468e+06    6.859e+06   1.23
+ FAT 100        73.7        40.5 |         66.3    8.468e+06    6.859e+06   1.23
+  FAT 90        66.3        36.4 |         59.7    8.468e+06    6.859e+06   1.23
+  FAT 80        58.9        32.4 |         53.1    8.468e+06    6.859e+06   1.23
+  FAT 71        52.3        28.7 |         47.1    8.468e+06    6.859e+06   1.23
+  FAT 63        46.4        25.5 |         41.8    8.468e+06    6.859e+06   1.23
+  FAT 50        36.8        20.2 |         33.2    8.468e+06    6.859e+06   1.23
+  FAT 45        33.2        18.2 |         29.8    8.468e+06    6.859e+06   1.23
+  FAT 36        26.5        14.6 |         23.9    8.468e+06    6.859e+06   1.23
+
+Por debajo del cut-off la curva trilineal no acumula daño; la recta única sí:
+  FAT 90, Δσ = 32.8 MPa (< Δσ_L = 36.4): N trilineal = inf,  N recta m=3 = 4.139e+07
+
+Usa `ec3_sn` para EN 1993-1-9; `FatigueEvaluator` queda para espectros de alta tensión donde todo cae en el tramo m = 3 o para normas de pendiente única.

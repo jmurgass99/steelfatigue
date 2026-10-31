@@ -1,0 +1,15 @@
+GET /api/fatigue/health → 200 {'status': 'ok'}
+
+POST /api/fatigue/evaluate → 200
+{
+  "detail_category": 80.0,
+  "total_damage": 0.6325,
+  "status": "PASS",
+  "message": "Fatigue life is adequate"
+}
+
+POST /api/fatigue/hotspot → 200 {'sigma_hot_spot_MPa': 158.07999999999998}
+
+POST /api/fatigue/paris → 200 {'N_cycles': 1295428.1, 'failure': True} (199 puntos (N, a) en 'a_vs_N')
+
+Bloque sin 'stress_range' → 422 (422: validación de entrada, no 500)

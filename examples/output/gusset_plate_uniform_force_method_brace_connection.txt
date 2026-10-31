@@ -1,0 +1,10 @@
+θ implícito = atan((β+e_b)/(α+e_c)) = 42.24°
+  Interfaz cartela-viga:   H_b =   476.0 kN   V_b =   222.9 kN
+  Interfaz cartela-pilar:  H_c =   190.4 kN   V_c =   382.0 kN
+  ΣH = 666.3 kN frente a P·cos θ = 666.3 kN
+  ΣV = 605.0 kN frente a P·sin θ = 605.0 kN
+
+Con θ = 42° impuesto: equilibrio UFM NO se cumple (residuo α − β·tanθ − (e_c·tanθ − e_b) = 146.5 mm)
+  Las componentes no cambian (dependen solo de la geometría): H_b = 476.0 kN, V_c = 382.0 kN, pero ΣH = 666.3 ≠ P·cos 42° = 668.8 kN
+
+Diagonal a compresión (P = −900 kN): H_b = -476.0 kN, V_c = -382.0 kN (signos invertidos)

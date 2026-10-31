@@ -1,0 +1,19 @@
+Ciclos devueltos por rainflow_count:
+  rango =  4.1  media =   1.0  count = 1.0
+  rango =  3.1  media =  -0.5  count = 0.5
+  rango =  4.1  media =  -1.0  count = 0.5
+  rango =  8.0  media =   1.0  count = 0.5
+  rango =  9.0  media =   0.5  count = 0.5
+  rango =  8.0  media =   0.0  count = 0.5
+  rango =  6.0  media =   1.0  count = 0.5
+
+Rango → ciclos (paquete)  |  tabla ASTM E1049
+   3 →  0.5  |   0.5
+   4 →  1.5  |   1.5
+   6 →  0.5  |   0.5
+   8 →  1.0  |   1.0
+   9 →  0.5  |   0.5
+
+Total ciclos: paquete 4.0, ASTM 4.0
+
+Versión vectorizada: 7 entradas, rango máximo 9.0, Σ counts = 4.0

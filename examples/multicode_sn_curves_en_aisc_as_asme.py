@@ -7,11 +7,12 @@ espesor (efecto de tamaño) a una placa gruesa.
 
 Ejecutar:  python examples/03_multicode_sn_curves.py
 """
+from steelfatigue.ec3_sn import ec3_cycles_to_failure
 from steelfatigue.sn_curves_multi import (
     AISC_CATEGORIES,
+    AS4100_CATEGORIES,
     cycles_to_failure,
     equivalent_categories,
-    lookup_sn,
     size_effect_ks,
     with_size_effect,
 )
@@ -23,11 +24,15 @@ DELTA_SIGMA = 80.0   # MPa
 def main() -> None:
     print(f"Ciclos resistentes para Δσ = {DELTA_SIGMA} MPa\n")
 
-    print("EN 1993-1-9 (catálogo FAT):")
+    print("EN 1993-1-9 (catálogo FAT, curva trilineal de ec3_sn):")
     for fat in list_fat_categories()[:8]:
-        curve = lookup_sn("EU", fat.code) if lookup_sn("EU", fat.code) else None
-        n = cycles_to_failure(curve, DELTA_SIGMA) if curve else float("nan")
+        n = ec3_cycles_to_failure(DELTA_SIGMA, fat)
         print(f"  {fat.code:>8}  Δσ_C = {fat.delta_sigma_C:6.1f} MPa  N = {n:.3e}")
+
+    print("\nAS 4100 §11 (recta única m = 3 con cut-off a 1e8):")
+    for curve in AS4100_CATEGORIES:
+        print(f"  Cat. {curve.category:>3}  Δσ_C = {curve.delta_sigma_C_MPa:6.1f} MPa  "
+              f"N = {cycles_to_failure(curve, DELTA_SIGMA):.3e}")
 
     print("\nAISC 360-22 Apéndice 3:")
     for curve in AISC_CATEGORIES:

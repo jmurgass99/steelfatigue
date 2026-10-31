@@ -1,0 +1,12 @@
+Historia: 12000 puntos, σ ∈ [35.6, 128.5] MPa, media 85.8 MPa
+Curva: AISC cat. C, Δσ_C = 69.0 MPa, m = 3
+
+Goodman, historia real
+  ciclos contados = 3151, D/hora = 1.090e-04, D/año = 3.269e-01, vida = 3 años (NO cumple 50 años)
+  ciclo más dañino: Δσ_eq = 111.6 MPa, N = 4.73e+05
+Gerber, historia real
+  ciclos contados = 3151, D/hora = 7.919e-05, D/año = 2.376e-01, vida = 4 años (NO cumple 50 años)
+  ciclo más dañino: Δσ_eq = 94.5 MPa, N = 7.78e+05
+Goodman, historia centrada (media 0)
+  ciclos contados = 3151, D/hora = 7.495e-05, D/año = 2.249e-01, vida = 4 años (NO cumple 50 años)
+  ciclo más dañino: Δσ_eq = 91.4 MPa, N = 8.60e+05

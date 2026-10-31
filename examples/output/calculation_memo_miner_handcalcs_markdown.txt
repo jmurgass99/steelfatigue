@@ -1,0 +1,22 @@
+D total = 0.631 → CUMPLE
+  P1 (vano)      Δσ =  75.16 MPa  n = 1.0e+06  N =  1.586e+06  n/N = 0.6306
+  P2 (voladizo)  Δσ =   8.67 MPa  n = 2.0e+06  N =  3.611e+10  n/N = 0.0001
+
+--- Markdown (primeras líneas) ---
+# Memoria — Daño acumulado Palmgren-Miner (EN 1993-1-9)
+
+**Categoría de detalle:** Δσ_C = 80.0 MPa
+**Factor parcial:** γ_Mf = 1.15
+**Resistencia de diseño:** Δσ_C,d = 69.6 MPa
+
+## Espectro de tensiones
+
+| Bloque | Δσ [MPa] | n_i | N_i | D_i |
+|---|---|---|---|---|
+| P1 (vano) | 75.2 | 1.00e+06 | 1.59e+06 | 0.6306 |
+| P2 (voladizo) | 8.7 | 2.00e+06 | 3.61e+10 | 0.0001 |
+
+**Daño total:** D = 0.631
+**Verificación:** D ≤ 1.0 → ✅ PASS
+
+LaTeX: 131 caracteres generados

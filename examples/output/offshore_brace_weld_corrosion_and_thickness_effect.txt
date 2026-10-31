@@ -1,0 +1,10 @@
+Categoría base 71 MPa, t = 40 mm → k_s = 0.910, Δσ = 50.0 MPa
+
+ambiente           factor  Δσ_C amb  Δσ_C amb·k_s    N (amb)   N (amb+t)
+seawater             0.50      35.5          32.3   7.16e+05    5.40e+05
+marine_atmosphere    0.70      49.7          45.2   1.96e+06    1.48e+06
+industrial           0.80      56.8          51.7   2.93e+06    2.21e+06
+urban                0.85      60.4          54.9   3.52e+06    2.65e+06
+rural                1.00      71.0          64.6   5.73e+06    4.32e+06
+
+Los factores ambientales son valores orientativos del paquete; para proyecto, usar la curva en agua de mar con o sin protección catódica de la norma aplicable (p. ej. DNV-RP-C203).

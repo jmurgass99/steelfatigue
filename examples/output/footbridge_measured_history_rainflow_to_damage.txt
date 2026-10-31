@@ -1,0 +1,13 @@
+Historial: 20000 puntos, σ entre -24.0 y 143.0 MPa
+Ciclos rainflow extraídos: 2588 (semiciclos cuentan 0.5)
+
+Daño por día (FAT 80, γ_Mf = 1.15): D = 4.310e-04
+Daño en 50 años:               D = 7.866
+→ NO CUMPLE. Vida estimada: 6.4 años
+
+Rangos más dañinos:
+  Δσ =  167.0 MPa  n/día =    0.5  daño/día = 3.46e-06
+  Δσ =   93.9 MPa  n/día =    1.0  daño/día = 1.23e-06
+  Δσ =   93.9 MPa  n/día =    1.0  daño/día = 1.23e-06
+  Δσ =   93.9 MPa  n/día =    1.0  daño/día = 1.23e-06
+  Δσ =  117.4 MPa  n/día =    0.5  daño/día = 1.20e-06
