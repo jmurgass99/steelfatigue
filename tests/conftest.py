@@ -1,4 +1,4 @@
-"""Configuracion comun de pytest para FatigueJm."""
+"""Configuracion comun de pytest para SteelFatigue."""
 from __future__ import annotations
 
 import sys

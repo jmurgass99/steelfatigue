@@ -2,8 +2,8 @@
 Verificación a rotura frágil EN 1993-1-10 (EC3-1-10) — selección de subgrado /
 espesor máximo admisible frente a fractura frágil.
 
-Implementado aquí (FatigueJm), NO en FireSteelJm: el propio docstring de
-`fatiguejm.__init__` ya declara el paquete como "Fatigue and Brittle Fracture
+Implementado aquí (SteelFatigue), NO en FireSteelJm: el propio docstring de
+`steelfatigue.__init__` ya declara el paquete como "Fatigue and Brittle Fracture
 Evaluation Engine", y dos fichas máster independientes (W01468, W01469 — misma
 convocatoria de examen, transcripciones distintas, resultados coincidentes al
 decimal) resuelven un ejemplo COMPLETO de EC3-1-10 de principio a fin: viga

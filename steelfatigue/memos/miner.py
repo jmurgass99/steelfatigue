@@ -89,8 +89,8 @@ def render_miner_memo(data: MinerMemoInput) -> MinerMemoResult:
     <= 0, :func:`_n_endurance` devolvia N = 0 y el guardia ``if N > 0 else 0.0``
     convertia esa capacidad NULA en dano CERO: D = 0 -> ``pass_check=True`` ->
     la cadena ``"✅ PASS"`` impresa en una memoria firmada. La misma validacion
-    ya existia en :mod:`fatiguejm.services.fatigue_service` y en
-    ``HSRFatigueJm.en1993_sn_N`` (que lanza con ``delta_sigma_C <= 0``).
+    ya existia en :mod:`steelfatigue.services.fatigue_service` y en
+    ``HSRSteelFatigue.en1993_sn_N`` (que lanza con ``delta_sigma_C <= 0``).
     """
     if data.detail_category <= 0:
         raise DetailCategoryError(

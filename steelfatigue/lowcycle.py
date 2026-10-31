@@ -7,7 +7,7 @@ Dos motores extraídos del Master IEG 3240 (Taller de Diseño de Acero):
    Manual Part 13) para extraer las fuerzas en las interfaces gusset-viga y
    gusset-columna a partir del esfuerzo en la diagonal. Esas fuerzas son la
    entrada del cálculo de fatiga por la curva S-N (ver
-   :class:`fatiguejm.sn_curves.FatigueEvaluator`).
+   :class:`steelfatigue.sn_curves.FatigueEvaluator`).
 
 2. :class:`CoffinMansonRBS` — daño oligocíclico (Low-Cycle Fatigue, LCF) sobre
    una historia de rotaciones plásticas en conexiones RBS (Reduced Beam
@@ -16,7 +16,7 @@ Dos motores extraídos del Master IEG 3240 (Taller de Diseño de Acero):
    la curva S-N de alto ciclo deja de aplicar.
 
 Convenciones del paquete: unidades SI coherentes, type hints, sin estado
-global, excepciones derivadas de :class:`fatiguejm.exceptions.FatigueError`.
+global, excepciones derivadas de :class:`steelfatigue.exceptions.FatigueError`.
 """
 from __future__ import annotations
 

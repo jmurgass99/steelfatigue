@@ -1,4 +1,4 @@
-"""Smoke tests del endpoint HTTP de FatigueJm.
+"""Smoke tests del endpoint HTTP de SteelFatigue.
 
 Cierra el hueco identificado en la auditoría: tests previos cubrían la
 lógica pero no la capa HTTP, dejando latente el bug de Pydantic local +
@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from fatiguejm.api.app import create_app, create_router
+from steelfatigue.api.app import create_app, create_router
 
 
 @pytest.fixture
@@ -72,7 +72,7 @@ def test_missing_required_field_yields_422(client: TestClient):
 # Un dato invalido debe ser 422 (culpa del cliente), NUNCA 500.
 #
 # Los handlers de /endurance y /mean-stress solo capturaban ValueError, pero el
-# codigo que invocan lanza fatiguejm.exceptions.ValidationError, que NO hereda de
+# codigo que invocan lanza steelfatigue.exceptions.ValidationError, que NO hereda de
 # ValueError: escapaba como 500. Ya ocurria con `finish` desconocido (ka_surface
 # siempre lanzo) y con Soderberg sin Sy; al dejar de devolver kc=1.0 en silencio
 # para una carga desconocida, `loading` se sumo al mismo camino.

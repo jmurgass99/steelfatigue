@@ -1,8 +1,8 @@
 """Tests para memoria handcalcs Miner."""
 import pytest
 
-from fatiguejm.exceptions import DetailCategoryError
-from fatiguejm.memos import MinerMemoInput, render_miner_memo
+from steelfatigue.exceptions import DetailCategoryError
+from steelfatigue.memos import MinerMemoInput, render_miner_memo
 
 
 def test_memo_pass():

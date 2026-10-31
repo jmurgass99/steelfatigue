@@ -4,7 +4,7 @@ La ausencia se propaga como ausencia. Un dato que falta (categoria de detalle
 nula, bloque de espectro sin rango o sin ciclos) NO puede convertirse en un dano
 0.0 que el informe imprime como ``PASS`` / ``Fatigue life is adequate``.
 
-``fatiguejm.services.fatigue_service`` ya validaba esto con
+``steelfatigue.services.fatigue_service`` ya validaba esto con
 :class:`DetailCategoryError` / :class:`SpectrumError`; el evaluador subyacente
 (publico y usable directamente) no lo hacia.
 """
@@ -12,8 +12,8 @@ from __future__ import annotations
 
 import pytest
 
-from fatiguejm.exceptions import DetailCategoryError, SpectrumError
-from fatiguejm.sn_curves import FatigueEvaluator
+from steelfatigue.exceptions import DetailCategoryError, SpectrumError
+from steelfatigue.sn_curves import FatigueEvaluator
 
 
 class TestCategoriaDetalleInvalida:

@@ -1,9 +1,9 @@
 """
 Curva S-N trilineal de detalle EN 1993-1-9 §7 (EC3-1-9) y daño Palmgren-Miner.
 
-A diferencia de :func:`fatiguejm.sn_curves_multi.cycles_to_failure` (recta única
+A diferencia de :func:`steelfatigue.sn_curves_multi.cycles_to_failure` (recta única
 m=3 con recorte de N, pensada para AISC/AS/ASME) y de
-:meth:`fatiguejm.sn_curves.FatigueEvaluator.calculate_endurance` (recta única
+:meth:`steelfatigue.sn_curves.FatigueEvaluator.calculate_endurance` (recta única
 m=3 sin codo ni cut-off), aquí se implementa la curva **trilineal** canónica del
 Eurocódigo 3 Parte 1-9, §7.1 (ec. 7.1), con sus tres tramos:
 
@@ -17,7 +17,7 @@ Eurocódigo 3 Parte 1-9, §7.1 (ec. 7.1), con sus tres tramos:
            Δσ_L = Δσ_D · (5·10⁶/10⁸)^(1/5)  ≈ 0.549 · Δσ_D  ≈ 0.405 · Δσ_C
        Δσ < Δσ_L  →  N = ∞  (no contribuye al daño).
 
-Las categorías de detalle Δσ_C (FAT) viven en :mod:`fatiguejm.wohler_db`; este
+Las categorías de detalle Δσ_C (FAT) viven en :mod:`steelfatigue.wohler_db`; este
 módulo las reutiliza (no define un segundo catálogo). Las funciones de la curva
 son **puras**: reciben Δσ_C (resistencia característica) y devuelven N, sin
 aplicar ningún factor parcial. El factor parcial de resistencia a fatiga γ_Mf

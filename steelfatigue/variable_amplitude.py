@@ -1,7 +1,7 @@
 """
 Fatiga de amplitud variable — Rainflow + corrección de tensión media + Miner.
 
-Integra las piezas que ya existen en FatigueJm:
+Integra las piezas que ya existen en SteelFatigue:
   1. Conteo Rainflow (`rainflow_count`) → ciclos (rango, media, conteo).
   2. Corrección de tensión media (`mean_stress.equivalent_reversed_stress`) →
      rango equivalente totalmente alternado (R=-1) por ciclo.

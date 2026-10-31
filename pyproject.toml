@@ -3,13 +3,13 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fatiguejm"
+name = "steelfatigue"
 version = "1.0.0"
 description = "Evaluación de fatiga y rotura frágil en acero estructural (EN 1993-1-9 y EN 1993-1-10)."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Jesús Murga" }]
+authors = [{ name = "Jesús Murgas" }]
 keywords = ["fatigue", "structural-engineering", "eurocode", "EN-1993-1-9", "rainflow", "palmgren-miner", "steel"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -44,12 +44,12 @@ memos = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jmurgass99/fatiguejm"
-Repository = "https://github.com/jmurgass99/fatiguejm"
-Issues = "https://github.com/jmurgass99/fatiguejm/issues"
+Homepage = "https://github.com/jmurgass99/steelfatigue"
+Repository = "https://github.com/jmurgass99/steelfatigue"
+Issues = "https://github.com/jmurgass99/steelfatigue/issues"
 
 [tool.setuptools.packages.find]
-include = ["fatiguejm*"]
+include = ["steelfatigue*"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -62,7 +62,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["fatiguejm"]
+source = ["steelfatigue"]
 branch = true
 omit = ["*/__pycache__/*", "*/_brand.py"]
 

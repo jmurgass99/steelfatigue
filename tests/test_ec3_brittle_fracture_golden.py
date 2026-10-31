@@ -1,4 +1,4 @@
-"""Golden tests — rotura frágil EN 1993-1-10 (`fatiguejm.ec3_brittle_fracture`).
+"""Golden tests — rotura frágil EN 1993-1-10 (`steelfatigue.ec3_brittle_fracture`).
 
 Ancla el único ejemplo COMPLETO de EC3-1-10 encontrado en la campaña de
 extracción de fichas, confirmado por DOS transcripciones independientes del
@@ -38,7 +38,7 @@ lo que no está anclado por una ficha).
 """
 import pytest
 
-from fatiguejm.ec3_brittle_fracture import (
+from steelfatigue.ec3_brittle_fracture import (
     EC3110_DELTA_TR_DEFAULT_C,
     brittle_fracture_check,
     interpolate_max_thickness,

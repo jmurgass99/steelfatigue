@@ -1,8 +1,8 @@
 """Tests Paris law + Wöhler DB."""
 import pytest
 
-from fatiguejm.paris_law import ParisInput, integrate_paris
-from fatiguejm.wohler_db import (
+from steelfatigue.paris_law import ParisInput, integrate_paris
+from steelfatigue.wohler_db import (
     FAT_DATABASE, list_fat_categories, lookup_fat, recommend_for_detail,
 )
 

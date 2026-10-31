@@ -1,15 +1,15 @@
-"""Tests para fatiguejm.lowcycle (UFM gusset + Coffin-Manson RBS)."""
+"""Tests para steelfatigue.lowcycle (UFM gusset + Coffin-Manson RBS)."""
 import numpy as np
 import pytest
 
-from fatiguejm.exceptions import ValidationError
-from fatiguejm.lowcycle import (
+from steelfatigue.exceptions import ValidationError
+from steelfatigue.lowcycle import (
     CoffinMansonParams,
     CoffinMansonRBS,
     UFMGeometry,
     UFMGussetForces,
 )
-from fatiguejm.services import (
+from steelfatigue.services import (
     LowCycleInput,
     UFMInput,
     evaluate_lowcycle,

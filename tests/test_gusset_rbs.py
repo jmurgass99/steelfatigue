@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from fatiguejm.gusset_rbs import FatigueGussetUFM, FatigueRBS
+from steelfatigue.gusset_rbs import FatigueGussetUFM, FatigueRBS
 
 
 def test_ufm_symmetric_45deg():

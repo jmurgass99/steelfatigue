@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from fatiguejm.mean_stress import (
+from steelfatigue.mean_stress import (
     MeanStressInput,
     equivalent_reversed_stress,
     safety_factors,

@@ -1,8 +1,8 @@
-# FatigueJm
+# SteelFatigue
 
 Evaluación de fatiga y rotura frágil en acero estructural según **EN 1993-1-9** y **EN 1993-1-10**, con conteo rainflow, acumulación de daño Palmgren-Miner, fatiga oligocíclica, tensión de punto caliente y propagación de grieta.
 
-[![CI](https://github.com/jmurgass99/fatiguejm/actions/workflows/ci.yml/badge.svg)](https://github.com/jmurgass99/fatiguejm/actions/workflows/ci.yml)
+[![CI](https://github.com/jmurgass99/steelfatigue/actions/workflows/ci.yml/badge.svg)](https://github.com/jmurgass99/steelfatigue/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -11,21 +11,21 @@ Paquete Python puro e independiente: solo depende de `numpy` y `fatpack`.
 ## Instalación
 
 ```bash
-pip install git+https://github.com/jmurgass99/fatiguejm.git
+pip install git+https://github.com/jmurgass99/steelfatigue.git
 ```
 
 Extras opcionales:
 
 ```bash
-pip install "fatiguejm[api] @ git+https://github.com/jmurgass99/fatiguejm.git"    # REST API (FastAPI)
-pip install "fatiguejm[memos] @ git+https://github.com/jmurgass99/fatiguejm.git"  # memorias de cálculo (handcalcs)
+pip install "steelfatigue[api] @ git+https://github.com/jmurgass99/steelfatigue.git"    # REST API (FastAPI)
+pip install "steelfatigue[memos] @ git+https://github.com/jmurgass99/steelfatigue.git"  # memorias de cálculo (handcalcs)
 ```
 
 Para desarrollo:
 
 ```bash
-git clone https://github.com/jmurgass99/fatiguejm.git
-cd fatiguejm
+git clone https://github.com/jmurgass99/steelfatigue.git
+cd steelfatigue
 pip install -e ".[test,api,memos]"
 pytest -q
 ```
@@ -37,7 +37,7 @@ pytest -q
 Ejemplo clásico: viga IPE 240, categoría de detalle 80, método *safe-life* (γ_Mf = 1,15).
 
 ```python
-from fatiguejm.ec3_sn import palmgren_miner_ec3
+from steelfatigue.ec3_sn import palmgren_miner_ec3
 
 spectrum = [
     {"stress_range_MPa": 75.16, "cycles": 1.0e6},
@@ -55,7 +55,7 @@ La curva implementa los tres tramos del Eurocódigo: pendiente m = 3 hasta el l�
 ### Ciclos resistentes para un rango de tensión
 
 ```python
-from fatiguejm.ec3_sn import ec3_cycles_to_failure, constant_amplitude_limit, cutoff_limit
+from steelfatigue.ec3_sn import ec3_cycles_to_failure, constant_amplitude_limit, cutoff_limit
 
 ec3_cycles_to_failure(100.0, detail=112)   # N para Δσ = 100 MPa, FAT 112
 constant_amplitude_limit(112)              # Δσ_D ≈ 82.5 MPa
@@ -65,7 +65,7 @@ cutoff_limit(112)                          # Δσ_L ≈ 45.3 MPa
 ### Conteo rainflow (ASTM E1049) de un historial de tensiones
 
 ```python
-from fatiguejm.rainflow_fatpack import rainflow_count
+from steelfatigue.rainflow_fatpack import rainflow_count
 
 history = [0, 80, -20, 60, 10, 90, -40, 0]
 for c in rainflow_count(history):
@@ -75,7 +75,7 @@ for c in rainflow_count(history):
 ### Corrección por tensión media
 
 ```python
-from fatiguejm.mean_stress import equivalent_reversed_stress
+from steelfatigue.mean_stress import equivalent_reversed_stress
 
 equivalent_reversed_stress(sigma_a=60.0, sigma_m=40.0, Su=490.0, criterion="goodman")   # 65.33 MPa
 ```
@@ -107,7 +107,7 @@ equivalent_reversed_stress(sigma_a=60.0, sigma_m=40.0, Su=490.0, criterion="good
 
 ```bash
 pip install -e ".[api]"
-uvicorn fatiguejm.api.app:app --reload
+uvicorn steelfatigue.api.app:app --reload
 # http://localhost:8000/docs
 ```
 
@@ -118,3 +118,7 @@ Los tests golden de `ec3_sn` y `ec3_brittle_fracture` anclan los resultados a ej
 ## Licencia
 
 MIT. Consulta [LICENSE](LICENSE).
+
+---
+
+Parte del toolkit estructural de código abierto **Loadpath**, de [Jesús Murgas](https://github.com/jmurgass99).

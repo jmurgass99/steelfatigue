@@ -1,7 +1,7 @@
 """Tests para hot-spot stress extrapolation (IIW Tipo a/b)."""
 import pytest
 
-from fatiguejm.hotspot import (
+from steelfatigue.hotspot import (
     HotSpotInput,
     hot_spot_from_radial_samples,
     hot_spot_stress,

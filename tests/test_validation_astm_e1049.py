@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 
 fatpack = pytest.importorskip("fatpack")
-from fatiguejm.rainflow_fatpack import (
+from steelfatigue.rainflow_fatpack import (
     RainflowCycle,
     rainflow_count,
     rainflow_count_arrays,

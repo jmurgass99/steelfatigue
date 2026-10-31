@@ -1,4 +1,4 @@
-"""Memorias de cálculo handcalcs para FatigueJm."""
+"""Memorias de cálculo handcalcs para SteelFatigue."""
 from .miner import MinerMemoInput, MinerMemoResult, render_miner_memo
 from .miner_coffin_manson import (
     CoffinMansonMemoInput,

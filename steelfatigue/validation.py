@@ -1,7 +1,7 @@
 """Validadores de parámetros de ingeniería, sin dependencias.
 
 Copia local (vendorizada) de los validadores compartidos del ecosistema
-Structural JM, para que ``fatiguejm`` funcione como paquete independiente.
+Structural JM, para que ``steelfatigue`` funcione como paquete independiente.
 
 El estilo de mensaje y el tipo de excepción imitan deliberadamente lo que los
 módulos ya levantan (``ValueError("<name> must be positive")``, en inglés),

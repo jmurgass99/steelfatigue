@@ -1,6 +1,6 @@
 """Rainflow counting via fatpack (ASTM E1049-85 validado).
 
-Sustituye la implementacion casera de fatiguejm.sn_curves por el algoritmo
+Sustituye la implementacion casera de steelfatigue.sn_curves por el algoritmo
 canonico de fatpack. La API se mantiene compatible con cycles propios.
 """
 from __future__ import annotations
@@ -16,7 +16,7 @@ except ImportError:
     _HAS_FATPACK = False
     fatpack = None  # type: ignore
 
-log = logging.getLogger("fatiguejm.rainflow_fatpack")
+log = logging.getLogger("steelfatigue.rainflow_fatpack")
 
 
 @dataclass(frozen=True)

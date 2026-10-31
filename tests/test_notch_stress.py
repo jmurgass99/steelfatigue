@@ -1,6 +1,6 @@
 """Tests para notch stress IIW."""
 import pytest
-from fatiguejm.notch_stress import NotchInput, notch_stress, notch_endurance_OK
+from steelfatigue.notch_stress import NotchInput, notch_stress, notch_endurance_OK
 
 
 def test_butt_kt_lower_than_fillet():

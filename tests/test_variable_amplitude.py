@@ -1,9 +1,9 @@
 """Fatiga de amplitud variable — Rainflow + tensión media + Miner."""
 import pytest
 
-from fatiguejm.rainflow_fatpack import RainflowCycle
-from fatiguejm.sn_curves_multi import SNCurve, cycles_to_failure
-from fatiguejm.variable_amplitude import damage_from_cycles, damage_from_history
+from steelfatigue.rainflow_fatpack import RainflowCycle
+from steelfatigue.sn_curves_multi import SNCurve, cycles_to_failure
+from steelfatigue.variable_amplitude import damage_from_cycles, damage_from_history
 
 CURVE = SNCurve("US", "C", 69.0)   # AISC categoría C, m=3, Nc=2e6
 

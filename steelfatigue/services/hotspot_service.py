@@ -1,6 +1,6 @@
 """Servicio de analisis Hot-Spot Stress (HSS) con vida a fatiga.
 
-Envuelve :func:`fatiguejm.hotspot.hot_spot_stress` con calculo de
+Envuelve :func:`steelfatigue.hotspot.hot_spot_stress` con calculo de
 categoria IIW/FAT y estimacion de vida via curva S-N bilineal.
 """
 from __future__ import annotations

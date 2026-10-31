@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""Aplicacion FastAPI ligera para FatigueJm.
+"""Aplicacion FastAPI ligera para SteelFatigue.
 """
 from typing import Any
 from pydantic import BaseModel, Field
@@ -184,7 +184,7 @@ def create_router() -> Any:
                 sigma_a_MPa=payload.sigma_a_MPa, sigma_m_MPa=payload.sigma_m_MPa,
                 Se_MPa=payload.Se_MPa, Su_MPa=payload.Su_MPa, Sy_MPa=payload.Sy_MPa,
             ))
-        # ValidationError (fatiguejm) NO hereda de ValueError: sin capturarla
+        # ValidationError (steelfatigue) NO hereda de ValueError: sin capturarla
         # explicitamente, un criterio desconocido o Soderberg sin Sy escapaban
         # como 500 en vez de 422.
         except (ValueError, ValidationError) as exc:
@@ -210,7 +210,7 @@ def create_app() -> Any:
     """Crea y devuelve la app FastAPI standalone."""
     from fastapi import FastAPI
 
-    app = FastAPI(title="FatigueJm API", version="1.0.0")
+    app = FastAPI(title="SteelFatigue API", version="1.0.0")
     app.include_router(create_router())
     return app
 

@@ -1,6 +1,6 @@
 """Servicio de evaluacion de fatiga.
 
-Envuelve :class:`fatiguejm.sn_curves.FatigueEvaluator` con funciones puras
+Envuelve :class:`steelfatigue.sn_curves.FatigueEvaluator` con funciones puras
 tipadas, validacion y dataclasses serializables.
 """
 from __future__ import annotations

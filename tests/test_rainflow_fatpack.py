@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 fatpack = pytest.importorskip("fatpack")
-from fatiguejm.rainflow_fatpack import rainflow_count, rainflow_count_arrays
+from steelfatigue.rainflow_fatpack import rainflow_count, rainflow_count_arrays
 
 
 def test_rainflow_simple_sinusoid():

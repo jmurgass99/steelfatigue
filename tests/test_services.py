@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from fatiguejm.exceptions import DetailCategoryError, SpectrumError
-from fatiguejm.services import (
+from steelfatigue.exceptions import DetailCategoryError, SpectrumError
+from steelfatigue.services import (
     FatigueInput,
     FatigueResult,
     StressBlock,

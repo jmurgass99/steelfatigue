@@ -1,4 +1,4 @@
-"""Golden tests — curva S-N trilineal EN 1993-1-9 §7 (`fatiguejm.ec3_sn`).
+"""Golden tests — curva S-N trilineal EN 1993-1-9 §7 (`steelfatigue.ec3_sn`).
 
 Valores anclados a fichas máster del workspace (citadas por WorkID):
 
@@ -34,7 +34,7 @@ import math
 
 import pytest
 
-from fatiguejm.ec3_sn import (
+from steelfatigue.ec3_sn import (
     EC3_NC,
     EC3_N_CUTOFF,
     EC3_N_KNEE,
@@ -392,8 +392,8 @@ def test_ec3_1_9_miner_independiente_de_la_secuencia_golden_W01445():
 # Golden EN 1993-1-9 §7 — categoría de detalle Δσ_C = 90 MPa, curva completa.
 #
 # Oráculo: el TEXTO DE LA NORMA (EN 1993-1-9:2005 §7.1, Ec. 7.1 y Fig. 7.1), NO
-# la ejecución de `fatiguejm`. La categoría Δσ_C = 90 MPa figura en el catálogo
-# del propio paquete como 'FAT 90' (fatiguejm.wohler_db, atiesador transversal)
+# la ejecución de `steelfatigue`. La categoría Δσ_C = 90 MPa figura en el catálogo
+# del propio paquete como 'FAT 90' (steelfatigue.wohler_db, atiesador transversal)
 # y NO estaba cubierta por los goldens anteriores de este fichero (que anclan
 # 160/112/80/71/50/36). Aquí se cierra la curva completa para Δσ_C = 90: codo,
 # cut-off y un punto en CADA tramo.

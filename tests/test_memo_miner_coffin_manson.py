@@ -1,8 +1,8 @@
 """Tests para memoria handcalcs combinada Miner + Coffin-Manson."""
 import pytest
 
-from fatiguejm.memos import MinerMemoInput
-from fatiguejm.memos.miner_coffin_manson import (
+from steelfatigue.memos import MinerMemoInput
+from steelfatigue.memos.miner_coffin_manson import (
     CoffinMansonMemoInput,
     render_combined_fatigue_memo,
 )

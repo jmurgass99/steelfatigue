@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from fatiguejm.exceptions import (
+from steelfatigue.exceptions import (
     DetailCategoryError,
     FatigueError,
     SpectrumError,

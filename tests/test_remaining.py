@@ -1,12 +1,12 @@
 """Tests SWT + corrosion."""
 import pytest
 
-from fatiguejm.multiaxial import (
+from steelfatigue.multiaxial import (
     SWTInput,
     critical_plane_search,
     cycles_to_failure_swt,
 )
-from fatiguejm.corrosion import CORROSION_FACTORS, adjusted_FAT
+from steelfatigue.corrosion import CORROSION_FACTORS, adjusted_FAT
 
 
 class TestSWT:

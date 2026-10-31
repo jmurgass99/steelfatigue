@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from fatiguejm.services.hotspot_service import (
+from steelfatigue.services.hotspot_service import (
     HotSpotAnalysisInput,
     HotSpotAnalysisResult,
     run_hotspot_analysis,
@@ -105,7 +105,7 @@ class TestHotspotEndpoint:
     @pytest.fixture
     def client(self):
         from fastapi.testclient import TestClient
-        from fatiguejm.api.app import create_app
+        from steelfatigue.api.app import create_app
         return TestClient(create_app())
 
     def test_post_hotspot_analysis_200(self, client):

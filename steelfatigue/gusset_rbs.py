@@ -6,7 +6,7 @@ Integracion desde Master_IEG_Integrations/fatigue_gusset_rbs.py (2026-05-19).
   interfaces viga/columna/gusset. Sirve de base para luego aplicar SCF +
   curvas S-N (modulos `sn_curves_multi` / `wohler_db`).
 - FatigueRBS: dano oligociclico Engelhardt / Coffin-Manson sobre historial
-  de rotaciones plasticas (complementa `fatiguejm.lowcycle`).
+  de rotaciones plasticas (complementa `steelfatigue.lowcycle`).
 """
 from __future__ import annotations
 

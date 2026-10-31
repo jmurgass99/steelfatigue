@@ -1,4 +1,4 @@
-"""Jerarquia de excepciones de FatigueJm.
+"""Jerarquia de excepciones de SteelFatigue.
 
 Todas las excepciones del paquete heredan de :class:`FatigueError`.
 """
@@ -6,7 +6,7 @@ from __future__ import annotations
 
 
 class FatigueError(Exception):
-    """Excepcion base para todos los errores del paquete FatigueJm."""
+    """Excepcion base para todos los errores del paquete SteelFatigue."""
 
 
 class ValidationError(FatigueError):

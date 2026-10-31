@@ -1,8 +1,8 @@
 """Factores de Marin + efecto espesor — validado contra Shigley / EN 1993-1-9."""
 import pytest
 
-from fatiguejm.exceptions import ValidationError
-from fatiguejm.endurance_factors import (
+from steelfatigue.exceptions import ValidationError
+from steelfatigue.endurance_factors import (
     EnduranceInput,
     Se_prime,
     endurance_limit,
@@ -12,7 +12,7 @@ from fatiguejm.endurance_factors import (
     kd_temperature,
     ke_reliability,
 )
-from fatiguejm.sn_curves_multi import SNCurve, size_effect_ks, with_size_effect
+from steelfatigue.sn_curves_multi import SNCurve, size_effect_ks, with_size_effect
 
 
 class TestSePrime:

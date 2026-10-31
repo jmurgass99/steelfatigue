@@ -81,8 +81,8 @@ def kc_load(loading: str = "bending") -> float:
 
     Antes devolvía 1.0 —el factor MÁS FAVORABLE, sin reducción— para cualquier
     cadena no tabulada, mientras :func:`ka_surface`, en este mismo módulo, sí
-    lanza ante un acabado desconocido (y :func:`fatiguejm.corrosion.adjusted_FAT`
-    y :func:`fatiguejm.notch_stress.notch_stress` hacen lo propio). Un simple
+    lanza ante un acabado desconocido (y :func:`steelfatigue.corrosion.adjusted_FAT`
+    y :func:`steelfatigue.notch_stress.notch_stress` hacen lo propio). Un simple
     typo ('axail') pasaba kc de 0.85 a 1.0 y sobreestimaba Se un 18%.
     """
     key = loading.lower()

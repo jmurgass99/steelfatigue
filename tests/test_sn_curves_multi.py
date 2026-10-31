@@ -1,7 +1,7 @@
 """Tests S-N curves multi-código."""
 import pytest
 
-from fatiguejm.sn_curves_multi import (
+from steelfatigue.sn_curves_multi import (
     cycles_to_failure, equivalent_categories, lookup_sn,
     AISC_CATEGORIES, AS4100_CATEGORIES, ASME_CATEGORIES,
 )

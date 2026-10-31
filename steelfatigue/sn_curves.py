@@ -20,7 +20,7 @@ class FatigueEvaluator:
         ``if n_capacity > 0`` guard in :meth:`calculate_damage` silently skipped
         -> D = 0.0 -> ``"status": "PASS"`` and ``"Fatigue life is adequate"``.
         The same validation already lived in
-        :mod:`fatiguejm.services.fatigue_service`; it belongs here too, because
+        :mod:`steelfatigue.services.fatigue_service`; it belongs here too, because
         this class is public and usable directly.
         """
         if detail_category <= 0:
