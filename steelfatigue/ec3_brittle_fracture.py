@@ -8,8 +8,7 @@ Evaluation Engine", y dos fichas máster independientes (W01468, W01469 — mism
 convocatoria de examen, transcripciones distintas, resultados coincidentes al
 decimal) resuelven un ejemplo COMPLETO de EC3-1-10 de principio a fin: viga
 IPE 500 / S355JR, T₀=−35°C, verificación de espesor máximo admisible frente a
-rotura frágil. Ese es el "ejemplo completo" que habilita la excepción de la
-tarea (ver CLAUDE.md del package): implementar aquí, no inventar más alcance.
+rotura frágil. Ese es el "ejemplo completo" que habilita la implementacion directa aqui segun el alcance de referencia.
 
 Alcance deliberadamente MÍNIMO — solo lo que el ejemplo ancla:
 
