@@ -10,7 +10,7 @@ Verificação à fadiga de detalhes de aço estrutural por categoria de detalhe 
 
 ## Que problema resolve
 
-Você tem um espectro de variações de tensão (ou um histórico σ(t)) num detalhe soldado ou parafusado e precisa saber quantos ciclos ele resiste, que dano acumula na vida de projeto e que categoria de detalhe ou que espessura é necessária. O pacote faz essa parte: a curva de resistência, a contagem de ciclos e a acumulação de dano. As tensões vêm de você, do seu modelo ou das suas medições.
+Tem um espectro de variações de tensão (ou um histórico σ(t)) num detalhe soldado ou parafusado e precisa saber quantos ciclos ele resiste, que dano acumula na vida de projeto e que categoria de detalhe ou que espessura é necessária. O pacote faz essa parte: a curva de resistência, a contagem de ciclos e a acumulação de dano. As tensões são suas, do seu modelo ou das suas medições.
 
 **Use quando**
 
@@ -22,10 +22,10 @@ Você tem um espectro de variações de tensão (ou um histórico σ(t)) num det
 
 **Não use para**
 
-- obter tensões a partir de geometria e cargas: não há modelo de barras nem de seções;
+- obter tensões a partir de geometria e cargas: não há modelo de barras nem de secções;
 - o método dos fatores de dano equivalente λ da EN 1993-2 ou da EN 1993-6 (pontes, vigas de rolamento): não está implementado;
 - consultar as Tabelas 8.1 a 8.10 da EN 1993-1-9: o catálogo do pacote tem 12 categorias com uma descrição curta e a atribuição final é sua;
-- a Tabela 2.1 completa da EN 1993-1-10: a função recebe os pontos (razão, t_max) da subclasse e da temperatura que se aplicam a você e não extrapola fora deles;
+- a Tabela 2.1 completa da EN 1993-1-10: a função recebe os pontos (razão, t_max) da subclasse e da temperatura que se aplicam ao seu caso e não extrapola fora deles;
 - reduzir a 60 % a parte de compressão da variação em detalhes não soldados (EN 1993-1-9 §7.2.1(1)): não está implementado;
 - mecânica da fratura com K_IC e tamanho de defeito para o veredito de fratura frágil: apenas o método da espessura da EN 1993-1-10.
 
@@ -86,9 +86,9 @@ Detalle FAT 71, γ_Mf = 1,15:
 
 </details>
 
-#### Viga IPE 500 com balanço sob duas cargas repetidas: fadiga em duas seções
+#### Viga IPE 500 com balanço sob duas cargas repetidas: fadiga em duas secções
 
-Problema do exame da UPC de 2020-03-30 (fichas W01468/W01469 da extração do mestrado). A mesma categoria 80 verifica no meio do vão e falha no encastramento do balanço: a seção crítica à fadiga é decidida pela variação de tensão por ciclo, não pelo momento estático. Resultados da ficha: N_B = 13 811, D_B = 0,40, D_C = 1,07.
+Problema do exame da UPC de 2020-03-30 (fichas W01468/W01469 da extração do mestrado). A mesma categoria 80 verifica no meio do vão e falha no encastramento do balanço: a secção crítica à fadiga é decidida pela variação de tensão por ciclo, não pelo momento estático. Resultados da ficha: N_B = 13 811, D_B = 0,40, D_C = 1,07.
 
 <details><summary>Saída real de <code>python examples/ipe500_cantilever_beam_two_sections_exam_w01468.py</code></summary>
 
@@ -118,7 +118,7 @@ La misma categoría de detalle verifica en B y falla en C: la sección crítica 
 
 #### Carga admissível para uma vida exigida (curva S-N invertida)
 
-Exercise 7b do mestrado (ficha W01508): que carga esgota exatamente 500 000 ciclos num detalhe de categoria 80 e noutro de categoria 36. Resolve-se por bisseção sobre a curva trilinear e contrasta-se com a forma fechada do troço m = 3. Resultado da ficha: 376,3 kN e 102,4 kN.
+Exercise 7b do mestrado (ficha W01508): que carga esgota exatamente 500 000 ciclos num detalhe de categoria 80 e noutro de categoria 36. Resolve-se por bissecção sobre a curva trilinear e contrasta-se com a forma fechada do troço m = 3. Resultado da ficha: 376,3 kN e 102,4 kN.
 
 <details><summary>Saída real de <code>python examples/admissible_load_for_required_life_exam_w01508.py</code></summary>
 
