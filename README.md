@@ -1,5 +1,7 @@
 # steelfatigue — fatiga y rotura frágil de acero estructural (EN 1993-1-9 y EN 1993-1-10)
 
+**Español** · [English](README.en.md) · [Português](README.pt.md) · [Italiano](README.it.md)
+
 Comprobación a fatiga de detalles de acero estructural por categoría de detalle con la curva S-N trilineal de EN 1993-1-9 y el daño de Palmgren-Miner con γ_Mf; espesor máximo admisible frente a rotura frágil según EN 1993-1-10; y el camino completo desde una historia de tensiones medida o simulada: conteo rainflow (ASTM E1049), corrección por tensión media, tensión de punto caliente y de entalla (IIW), propagación de grieta (Paris) y fatiga oligocíclica (Coffin-Manson). Python puro, sin estado global, con las funciones ancladas a ejemplos resueltos a mano.
 
 [![CI](https://github.com/jmurgass99/steelfatigue/actions/workflows/ci.yml/badge.svg)](https://github.com/jmurgass99/steelfatigue/actions/workflows/ci.yml)
