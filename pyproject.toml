@@ -51,6 +51,9 @@ Issues = "https://github.com/jmurgass99/steelfatigue/issues"
 [tool.setuptools.packages.find]
 include = ["steelfatigue*"]
 
+[tool.setuptools.package-data]
+steelfatigue = ["py.typed"]
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra --strict-markers"

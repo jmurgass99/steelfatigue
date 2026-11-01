@@ -1,7 +1,7 @@
 """Servicio de analisis Hot-Spot Stress (HSS) con vida a fatiga.
 
 Envuelve :func:`steelfatigue.hotspot.hot_spot_stress` con calculo de
-categoria IIW/FAT y estimacion de vida via curva S-N bilineal.
+categoria IIW/FAT y estimacion de vida via curva S-N bilineal o trilineal EC3.
 """
 from __future__ import annotations
 
@@ -11,18 +11,7 @@ from typing import Any, Literal
 
 @dataclass(frozen=True)
 class HotSpotAnalysisInput:
-    """Entrada para el analisis HSS completo.
-
-    Args:
-        sigma_t_half: tension a t/2 [MPa].
-        sigma_3t_half: tension a 3t/2 [MPa].
-        thickness_mm: espesor de la placa [mm].
-        weld_type: tipo de soldadura / categoria FAT (ej. 'butt', 'fillet').
-        fat_class: categoria FAT (numero) asociada al tipo de soldadura.
-        method: 'linear' (IIW Tipo a) o 'quadratic' (IIW Tipo b).
-        sigma_5t_half: tension a 5t/2 (solo para 'quadratic').
-        gamma_mf: factor parcial de seguridad a fatiga.
-    """
+    """Entrada para el analisis HSS completo."""
     sigma_t_half: float
     sigma_3t_half: float
     thickness_mm: float
@@ -31,6 +20,7 @@ class HotSpotAnalysisInput:
     method: Literal["linear", "quadratic"] = "linear"
     sigma_5t_half: float | None = None
     gamma_mf: float = 1.0
+    use_trilinear_ec3: bool = False
 
     def validate(self) -> None:
         if self.thickness_mm <= 0:
@@ -54,15 +44,19 @@ class HotSpotAnalysisResult:
         return asdict(self)
 
 
-def _fatigue_life(stress_range: float, fat_class: float, gamma_mf: float) -> float:
-    """Vida a fatiga N via curva S-N bilineal (EN 1993-1-9 simplificada).
-
-    N = N_c * (FAT_d / sigma_range)^m
-    con N_c = 2e6, m = 3, FAT_d = fat_class / gamma_mf.
-    """
+def _fatigue_life(
+    stress_range: float,
+    fat_class: float,
+    gamma_mf: float,
+    use_trilinear_ec3: bool = False,
+) -> float:
+    """Vida a fatiga N via curva S-N (m=3 directa o trilineal EN 1993-1-9 §7.1)."""
     fat_d = fat_class / gamma_mf
     if stress_range <= 0:
         return float("inf")
+    if use_trilinear_ec3:
+        from ..ec3_sn import ec3_cycles_to_failure
+        return float(ec3_cycles_to_failure(stress_range, fat_d))
     return 2.0e6 * (fat_d / stress_range) ** 3
 
 
@@ -75,22 +69,9 @@ def run_hotspot_analysis(
     method: str = "linear",
     sigma_5t_half: float | None = None,
     gamma_mf: float = 1.0,
+    use_trilinear_ec3: bool = False,
 ) -> HotSpotAnalysisResult:
-    """Ejecuta analisis HSS completo: extrapolacion + vida a fatiga.
-
-    Args:
-        sigma_t_half: tension a t/2 [MPa].
-        sigma_3t_half: tension a 3t/2 [MPa].
-        thickness_mm: espesor [mm].
-        weld_type: tipo de soldadura.
-        fat_class: categoria FAT (ej. 90, 100).
-        method: 'linear' o 'quadratic'.
-        sigma_5t_half: tension a 5t/2 (solo quadratic).
-        gamma_mf: factor parcial de seguridad.
-
-    Returns:
-        HotSpotAnalysisResult con HSS, categoria FAT y vida estimada.
-    """
+    """Ejecuta analisis HSS completo: extrapolacion + vida a fatiga."""
     from ..hotspot import HotSpotInput, hot_spot_stress
 
     inp = HotSpotAnalysisInput(
@@ -102,6 +83,7 @@ def run_hotspot_analysis(
         method=method,
         sigma_5t_half=sigma_5t_half,
         gamma_mf=gamma_mf,
+        use_trilinear_ec3=use_trilinear_ec3,
     )
     inp.validate()
 
@@ -113,7 +95,12 @@ def run_hotspot_analysis(
         sigma_5t_half=inp.sigma_5t_half,
     ))
 
-    life = _fatigue_life(abs(sigma_hs), inp.fat_class, inp.gamma_mf)
+    life = _fatigue_life(
+        abs(sigma_hs),
+        inp.fat_class,
+        inp.gamma_mf,
+        use_trilinear_ec3=inp.use_trilinear_ec3,
+    )
 
     return HotSpotAnalysisResult(
         sigma_hot_spot_MPa=sigma_hs,

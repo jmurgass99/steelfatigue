@@ -33,6 +33,7 @@ class ParisInput:
     C: float = 6.9e-12        # m/ciclo con ΔK en MPa·√m (Barsom & Rolfe, ferrítico-perlítico)
     m: float = 3.0
     n_increments: int = 200
+    delta_K_th_MPa_sqrt_m: float = 0.0  # umbral de propagación ΔK_th [MPa·√m]
 
 
 @dataclass(frozen=True)
@@ -62,7 +63,13 @@ def integrate_paris(inp: ParisInput) -> ParisResult:
     for a_mm in a_values[:-1]:
         a_m = a_mm / 1000.0
         dK = inp.Y * inp.delta_sigma_MPa * sqrt(pi * a_m)   # MPa·√m
-        if dK <= 0:
+        if dK <= 0 or dK <= inp.delta_K_th_MPa_sqrt_m:
+            if a_mm == a_values[0] and dK <= inp.delta_K_th_MPa_sqrt_m:
+                return ParisResult(
+                    N_cycles=float("inf"),
+                    a_vs_N=[],
+                    failure=False,
+                )
             continue
         da_dN_m = inp.C * dK ** inp.m                        # m/ciclo
         if da_dN_m <= 0:
@@ -77,4 +84,9 @@ def integrate_paris(inp: ParisInput) -> ParisResult:
     )
 
 
-__all__ = ["ParisInput", "ParisResult", "integrate_paris"]
+def paris_cycles_to_failure(inp: ParisInput) -> float:
+    """Atajo que devuelve directamente el número de ciclos hasta a_critical."""
+    return integrate_paris(inp).N_cycles
+
+
+__all__ = ["ParisInput", "ParisResult", "integrate_paris", "paris_cycles_to_failure"]

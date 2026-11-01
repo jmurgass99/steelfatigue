@@ -64,36 +64,78 @@ def cycles_to_failure_swt(inp: SWTInput,
     return (lo + hi) / 2.0
 
 
-def critical_plane_search(stress_history: dict[str, list[float]],
-                            n_angles: int = 18) -> dict[str, float]:
-    """Búsqueda del plano crítico que maximiza σ_max·ε_a."""
+def findley_parameter(
+    tau_a_MPa: float,
+    sigma_n_max_MPa: float,
+    k_findley: float = 0.30,
+) -> float:
+    """Parámetro de plano crítico de Findley (1959): P_F = τ_a + k · σ_n,max [MPa]."""
+    return float(tau_a_MPa + k_findley * sigma_n_max_MPa)
+
+
+def brown_miller_parameter(
+    delta_gamma_max: float,
+    delta_eps_n: float,
+    S_bm: float = 1.0,
+) -> float:
+    """Parámetro de deformación de plano crítico de Brown & Miller (1973):
+    P_BM = Δγ_max / 2 + S · Δε_n.
+    """
+    return float(0.5 * delta_gamma_max + S_bm * delta_eps_n)
+
+
+def critical_plane_search(
+    stress_history: dict[str, list[float]],
+    n_angles: int = 18,
+    include_shear: bool = False,
+    nu: float = 0.30,
+    E_MPa: float = 200_000.0,
+) -> dict[str, float]:
+    """Búsqueda del plano crítico que maximiza σ_max·ε_a (y opcionalmente métricas de cortante)."""
     import numpy as np
     angles = np.linspace(0, np.pi, n_angles, endpoint=False)
     sxx = np.asarray(stress_history.get("sxx", []))
     syy = np.asarray(stress_history.get("syy", []))
     sxy = np.asarray(stress_history.get("sxy", []))
     if sxx.size == 0:
-        # Antes devolvía sigma_max = 0.0 y eps_a = 0.0 (y sin la clave P_SWT):
-        # una historia de tensiones AUSENTE se leía como "no hay demanda de
-        # fatiga", P_SWT = 0 -> vida infinita. La ausencia se propaga como
-        # ausencia, no como un cero tranquilizador.
         raise ValueError(
             "stress_history sin componente 'sxx' (o vacía): no hay historia de "
             "tensiones sobre la que buscar el plano crítico. Sin datos no hay "
             "resultado; un plano con sigma_max=0 sería una demanda inventada."
         )
-    best = {"theta_rad": 0.0, "P_SWT": 0.0,
-             "sigma_max": 0.0, "eps_a": 0.0}
+    best: dict[str, float] = {
+        "theta_rad": 0.0,
+        "P_SWT": 0.0,
+        "sigma_max": 0.0,
+        "eps_a": 0.0,
+    }
+    G_MPa = E_MPa / (2.0 * (1.0 + nu))
     for theta in angles:
         c, s = np.cos(theta), np.sin(theta)
         sigma_n = sxx * c ** 2 + syy * s ** 2 + 2 * sxy * c * s
-        eps_amp = (sigma_n.max() - sigma_n.min()) / 2.0 / 200_000.0
+        tau_n = -(sxx - syy) * s * c + sxy * (c ** 2 - s ** 2)
+        eps_amp = (sigma_n.max() - sigma_n.min()) / 2.0 / E_MPa
         P = sigma_n.max() * eps_amp
         if P > best["P_SWT"]:
-            best = {"theta_rad": float(theta), "P_SWT": float(P),
-                     "sigma_max": float(sigma_n.max()),
-                     "eps_a": float(eps_amp)}
+            best = {
+                "theta_rad": float(theta),
+                "P_SWT": float(P),
+                "sigma_max": float(sigma_n.max()),
+                "eps_a": float(eps_amp),
+            }
+            if include_shear:
+                tau_amp = float((tau_n.max() - tau_n.min()) / 2.0)
+                delta_gamma = float((tau_n.max() - tau_n.min()) / G_MPa)
+                best["tau_a"] = tau_amp
+                best["findley_MPa"] = findley_parameter(tau_amp, float(sigma_n.max()))
+                best["brown_miller"] = brown_miller_parameter(delta_gamma, 2.0 * float(eps_amp))
     return best
 
 
-__all__ = ["SWTInput", "cycles_to_failure_swt", "critical_plane_search"]
+__all__ = [
+    "SWTInput",
+    "cycles_to_failure_swt",
+    "critical_plane_search",
+    "findley_parameter",
+    "brown_miller_parameter",
+]
