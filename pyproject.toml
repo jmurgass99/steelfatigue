@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "steelfatigue"
-version = "1.1.0"
+version = "1.1.1"
 description = "Fatigue and brittle fracture checks for structural steel: EN 1993-1-9 trilinear S-N curve and Palmgren-Miner damage, EN 1993-1-10 maximum thickness, ASTM E1049 rainflow, mean-stress correction, IIW hot-spot and notch stress, Paris crack growth, Coffin-Manson low-cycle fatigue."
 readme = "README.md"
 requires-python = ">=3.10"

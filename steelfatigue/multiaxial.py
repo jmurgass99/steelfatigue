@@ -110,6 +110,9 @@ def critical_plane_search(
         "eps_a": 0.0,
     }
     G_MPa = E_MPa / (2.0 * (1.0 + nu))
+    # Cada criterio tiene su propio plano crítico: Findley y Brown-Miller se
+    # maximizan sobre todos los planos, no se evalúan en el plano de SWT.
+    shear_best = {"findley_MPa": -float("inf"), "brown_miller": -float("inf")}
     for theta in angles:
         c, s = np.cos(theta), np.sin(theta)
         sigma_n = sxx * c ** 2 + syy * s ** 2 + 2 * sxy * c * s
@@ -123,12 +126,17 @@ def critical_plane_search(
                 "sigma_max": float(sigma_n.max()),
                 "eps_a": float(eps_amp),
             }
-            if include_shear:
-                tau_amp = float((tau_n.max() - tau_n.min()) / 2.0)
-                delta_gamma = float((tau_n.max() - tau_n.min()) / G_MPa)
-                best["tau_a"] = tau_amp
-                best["findley_MPa"] = findley_parameter(tau_amp, float(sigma_n.max()))
-                best["brown_miller"] = brown_miller_parameter(delta_gamma, 2.0 * float(eps_amp))
+        if include_shear:
+            tau_amp = float((tau_n.max() - tau_n.min()) / 2.0)
+            delta_gamma = float((tau_n.max() - tau_n.min()) / G_MPa)
+            pf = findley_parameter(tau_amp, float(sigma_n.max()))
+            pbm = brown_miller_parameter(delta_gamma, 2.0 * float(eps_amp))
+            if pf > shear_best["findley_MPa"]:
+                shear_best.update(findley_MPa=pf, findley_theta_rad=float(theta), tau_a=tau_amp)
+            if pbm > shear_best["brown_miller"]:
+                shear_best.update(brown_miller=pbm, brown_miller_theta_rad=float(theta))
+    if include_shear:
+        best.update(shear_best)
     return best
 
 

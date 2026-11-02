@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1 — 2026-11-02
+
+- `multiaxial.critical_plane_search(include_shear=True)` evaluaba Findley y Brown-Miller en el plano crítico de SWT en vez de en el suyo: con σ_xx = 50 + 50·sen t y τ_xy = 80·cos t devolvía 65,4 MPa de Findley cuando el máximo sobre todos los planos es 110 MPa. Ahora cada criterio se maximiza por separado y el resultado trae `findley_theta_rad` y `brown_miller_theta_rad` (`tests/test_multiaxial_critical_planes.py`).
+- Documentado sin cambio de código: `gusset_rbs.FatigueRBS` por defecto toma inversiones (2N_f) como ciclos y da la mitad del daño de `lowcycle`; `use_half_reversals=True` lo evita.
+
 ## 1.1.0 — 2026-10-31
 
 Correcciones encontradas al ejecutar los casos de uso del README.
