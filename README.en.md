@@ -36,7 +36,7 @@ pip install git+https://github.com/jmurgass99/steelfatigue.git
 pip install "steelfatigue[api,memos] @ git+https://github.com/jmurgass99/steelfatigue.git"   # REST API and handcalcs reports
 ```
 
-Dependencies: `numpy` and `fatpack`. For development: `git clone`, `pip install -e ".[test,api,memos]"`, `pytest -q` (26 test files). On Windows, if the console is not UTF-8, run the examples with `python -X utf8 examples/<name>.py`.
+Dependencies: `numpy` and `fatpack`. For development: `git clone`, `pip install -e ".[test,api,memos]"`, `pytest -q` (27 test files). On Windows, if the console is not UTF-8, run the examples with `python -X utf8 examples/<name>.py`.
 
 ## Capabilities
 
@@ -845,7 +845,7 @@ Bloque sin 'stress_range' → 422 (422: validación de entrada, no 500)
 - `lowcycle.CoffinMansonRBS` converts plastic rotation into strain with a constant geometric factor (0.5 by default); the default parameters are those of A992.
 - `multiaxial.critical_plane_search` takes ε = σ/E on the normal plane (elastic) for SWT; with `include_shear=True` it adds Findley (k = 0.30 by default) and Brown-Miller with Δγ = Δτ/G, also elastic. Each criterion is maximised on its own plane: up to 1.1.0, Findley and Brown-Miller were evaluated on the SWT plane (110 MPa → 65.4 MPa in the regression test).
 - `sn_curves.FatigueEvaluator` is the legacy single-slope implementation without knee or cut-off; for EN 1993-1-9 use `ec3_sn`.
-- `gusset_rbs` duplicates UFM and Coffin-Manson with simplified formulas for compatibility; the reference versions are in `lowcycle`. By default `FatigueRBS` takes (ε_p/ε_f)^(1/c) as N_f, which in the Coffin-Manson equation are reversals (2N_f): it gives half the damage of `lowcycle`, on the unsafe side. `use_half_reversals=True` or σ′_f > 0 (Basquin) count in cycles.
+- `gusset_rbs` duplicates UFM and Coffin-Manson with simplified formulas for compatibility; the reference versions are in `lowcycle`. Since 1.1.2 `FatigueRBS` counts cycles like `lowcycle` (up to 1.1.1 it took reversals as cycles and gave half the damage). With σ′_f > 0 it adds Basquin to the capacity but compares it with the plastic strain: an approximation on the unsafe side.
 - EN 1993-1-10: T_Ed is simplified to the dominant term T₀ − ΔT_r; the other Annex A terms and the full Table 2.1 are not in the package.
 
 ## Codes and references

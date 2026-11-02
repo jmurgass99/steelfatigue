@@ -36,7 +36,7 @@ pip install git+https://github.com/jmurgass99/steelfatigue.git
 pip install "steelfatigue[api,memos] @ git+https://github.com/jmurgass99/steelfatigue.git"   # API REST e relazioni handcalcs
 ```
 
-Dipendenze: `numpy` e `fatpack`. Per lo sviluppo: `git clone`, `pip install -e ".[test,api,memos]"`, `pytest -q` (26 file di test). Su Windows, se la console non è UTF-8, esegui gli esempi con `python -X utf8 examples/<nome>.py`.
+Dipendenze: `numpy` e `fatpack`. Per lo sviluppo: `git clone`, `pip install -e ".[test,api,memos]"`, `pytest -q` (27 file di test). Su Windows, se la console non è UTF-8, esegui gli esempi con `python -X utf8 examples/<nome>.py`.
 
 ## Funzionalità
 
@@ -845,7 +845,7 @@ Bloque sin 'stress_range' → 422 (422: validación de entrada, no 500)
 - `lowcycle.CoffinMansonRBS` converte la rotazione plastica in deformazione con un fattore geometrico costante (0,5 per default); i parametri predefiniti sono quelli dell'A992.
 - `multiaxial.critical_plane_search` prende ε = σ/E sul piano normale (elastico) per SWT; con `include_shear=True` aggiunge Findley (k = 0,30 per impostazione predefinita) e Brown-Miller con Δγ = Δτ/G, anch'essi elastici. Ogni criterio è massimizzato sul proprio piano: fino alla 1.1.0 Findley e Brown-Miller erano valutati sul piano di SWT (110 MPa → 65,4 MPa nel test di regressione).
 - `sn_curves.FatigueEvaluator` è l'implementazione ereditata a pendenza unica senza ginocchio né cut-off; per la EN 1993-1-9 usa `ec3_sn`.
-- `gusset_rbs` duplica UFM e Coffin-Manson con formule semplificate per compatibilità; le versioni di riferimento sono in `lowcycle`. Per impostazione predefinita `FatigueRBS` prende (ε_p/ε_f)^(1/c) come N_f, che nell'equazione di Coffin-Manson sono inversioni (2N_f): dà metà del danno di `lowcycle`, a sfavore di sicurezza. `use_half_reversals=True` o σ′_f > 0 (Basquin) contano in cicli.
+- `gusset_rbs` duplica UFM e Coffin-Manson con formule semplificate per compatibilità; le versioni di riferimento sono in `lowcycle`. Dalla 1.1.2 `FatigueRBS` conta cicli come `lowcycle` (fino alla 1.1.1 prendeva le inversioni per cicli e dava metà del danno). Con σ′_f > 0 somma Basquin alla capacità, ma la confronta con la deformazione plastica: è un'approssimazione a sfavore di sicurezza.
 - EN 1993-1-10: T_Ed si semplifica al termine dominante T₀ − ΔT_r; gli altri termini dell'Allegato A e la Tabella 2.1 completa non sono nel pacchetto.
 
 ## Norme e riferimenti
