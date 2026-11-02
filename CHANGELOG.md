@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2 — 2026-11-02
+
+- `gusset_rbs.FatigueRBS.calculate_oligocyclic_damage`: la rama por defecto tomaba N_f = (ε_p/ε_f)^(1/c), que en Coffin-Manson son inversiones (2N_f), y daba la mitad del daño que `lowcycle.CoffinMansonRBS`, del lado inseguro. Activar Basquin con un σ′_f despreciable duplicaba el daño de golpe. Ahora N_f = ½·(ε_p/ε_f)^(1/c) siempre (`tests/test_rbs_damage_cycles.py`).
+
 ## 1.1.1 — 2026-11-02
 
 - `multiaxial.critical_plane_search(include_shear=True)` evaluaba Findley y Brown-Miller en el plano crítico de SWT en vez de en el suyo: con σ_xx = 50 + 50·sen t y τ_xy = 80·cos t devolvía 65,4 MPa de Findley cuando el máximo sobre todos los planos es 110 MPa. Ahora cada criterio se maximiza por separado y el resultado trae `findley_theta_rad` y `brown_miller_theta_rad` (`tests/test_multiaxial_critical_planes.py`).

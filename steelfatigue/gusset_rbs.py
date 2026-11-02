@@ -72,9 +72,14 @@ class FatigueRBS:
     ) -> float:
         """Dano acumulado de Coffin-Manson sobre amplitudes de rotacion plastica.
 
-        Si ``use_half_reversals=True``, delega en :class:`steelfatigue.lowcycle.CoffinMansonRBS`
-        (formulacion en inversiones ``2*N_f``). Si ``sigma_f_prime_MPa > 0``, incluye
-        el termino elastico de Basquin en la ecuacion de deformacion total.
+        Coffin-Manson se escribe en inversiones: eps_p = eps_f * (2 N_f)^c, asi que
+        N_f = 0.5 * (eps_p / eps_f)^(1/c) ciclos, igual que
+        :class:`steelfatigue.lowcycle.CoffinMansonRBS` (hasta la 1.1.1 la rama por
+        defecto devolvia 2 N_f como si fueran ciclos y daba la mitad del dano).
+        ``use_half_reversals=True`` delega en ``lowcycle`` (mismo resultado).
+        Si ``sigma_f_prime_MPa > 0`` anade el termino elastico de Basquin a la
+        CAPACIDAD (deformacion total) frente a una DEMANDA que sigue siendo la
+        deformacion plastica 0.5 * theta_p: es una aproximacion del lado inseguro.
         """
         arr = np.asarray(plastic_rotation_history, dtype=float)
         if use_half_reversals and sigma_f_prime_MPa <= 0.0:
@@ -97,9 +102,7 @@ class FatigueRBS:
                             hi = mid
                     N_f = 0.5 * (lo + hi)
                 else:
-                    N_f = (strain_p / eps_f) ** (1.0 / c)
-                    if use_half_reversals:
-                        N_f *= 0.5
+                    N_f = 0.5 * (strain_p / eps_f) ** (1.0 / c)   # ciclos (2 N_f = inversiones)
                 damage += 1.0 / N_f
         return float(damage)
 
