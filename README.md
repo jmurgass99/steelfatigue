@@ -36,7 +36,7 @@ pip install git+https://github.com/jmurgass99/steelfatigue.git
 pip install "steelfatigue[api,memos] @ git+https://github.com/jmurgass99/steelfatigue.git"   # API REST y memorias handcalcs
 ```
 
-Dependencias: `numpy` y `fatpack`. Para desarrollo: `git clone`, `pip install -e ".[test,api,memos]"`, `pytest -q` (23 ficheros de tests). En Windows, si la consola no es UTF-8, ejecuta los ejemplos con `python -X utf8 examples/<nombre>.py`.
+Dependencias: `numpy` y `fatpack`. Para desarrollo: `git clone`, `pip install -e ".[test,api,memos]"`, `pytest -q` (26 ficheros de tests). En Windows, si la consola no es UTF-8, ejecuta los ejemplos con `python -X utf8 examples/<nombre>.py`.
 
 ## Capacidades
 
@@ -368,6 +368,7 @@ Rango → ciclos (paquete)  |  tabla ASTM E1049
 Total ciclos: paquete 4.0, ASTM 4.0
 
 Versión vectorizada: 7 entradas, rango máximo 9.0, Σ counts = 4.0
+Conteo exacto en float64 (use_float64_exact=True): 4.0 ciclos; coincide con fatpack en esta señal de enteros (los rangos redondeados al entero; la cuantización en 64 niveles de fatpack aparece cuando los valores no caen en su malla)
 ```
 
 </details>
@@ -482,6 +483,8 @@ FAT 100 (cordón no portante), linear   : σ_hs =  158.1 MPa, N ≈ 3.33e+05 cic
 FAT 100 (cordón no portante), quadratic: σ_hs =  168.4 MPa, N ≈ 2.75e+05 ciclos (γ_Mf = 1,15, recta m = 3)
 FAT 90 (cordón portante), linear   : σ_hs =  158.1 MPa, N ≈ 2.43e+05 ciclos (γ_Mf = 1,15, recta m = 3)
 FAT 90 (cordón portante), quadratic: σ_hs =  168.4 MPa, N ≈ 2.01e+05 ciclos (γ_Mf = 1,15, recta m = 3)
+
+FAT 90 lineal con la curva trilineal de EN 1993-1-9 (use_trilinear_ec3=True): N ≈ 2.43e+05 frente a 2.43e+05 con la recta m = 3 (iguales: el rango está por encima del codo de 5·10⁶)
 ```
 
 </details>
@@ -642,6 +645,11 @@ Mismo plano con amplitudes de deformación crecientes (daño plástico):
   ε_a = 0.0015 → N_f = 9.274e+06
   ε_a = 0.0030 → N_f = 4.310e+05
   ε_a = 0.0060 → N_f = 3.797e+04
+
+Con include_shear=True cada criterio busca su propio plano (elástico, Δγ = Δτ/G):
+  SWT          θ =   0.0°  P_SWT = 0.0720 MPa
+  Findley      θ =   0.0°  P_F = τ_a + 0,30·σ_n,max = 96.0 MPa (τ_a = 60.0 MPa)
+  Brown-Miller θ =   0.0°  P_BM = Δγ/2 + Δε_n = 1.980e-03
 ```
 
 </details>
@@ -668,6 +676,10 @@ Crecimiento de la grieta (N acumulado → a):
        1256064 ciclos (  0.8 años) → a = 35.86 mm
 
 La mitad de la vida se consume mientras la grieta es menor de 5.3 mm: detectarla pronto es lo que cuenta.
+
+Umbral ΔK_th = 2.0 MPa·√m (delta_K_th_MPa_sqrt_m):
+  Δσ =   80 MPa: ΔK inicial = 7.10 MPa·√m → N = 1.279e+06 ciclos
+  Δσ =   20 MPa: ΔK inicial = 1.78 MPa·√m → N = inf ciclos (por debajo del umbral: la grieta no crece)
 ```
 
 </details>
@@ -823,15 +835,15 @@ Bloque sin 'stress_range' → 422 (422: validación de entrada, no 500)
 
 ## Limitaciones
 
-- `fatpack` cuantiza las inversiones en 64 niveles entre el mínimo y el máximo de la señal: los rangos salen con un error de hasta un 1,6 % del rango máximo. El número de ciclos no se ve afectado.
-- `services.hotspot_service` estima la vida con una recta de pendiente única m = 3, no con la curva trilineal.
+- `rainflow_count` usa por defecto `fatpack`, que cuantiza las inversiones en 64 niveles entre el mínimo y el máximo de la señal: los rangos salen con un error de hasta un 1,6 % del rango máximo (el número de ciclos no se ve afectado). Con `use_float64_exact=True` cuenta con la regla de 4 puntos de ASTM E1049 sin cuantizar.
+- `services.hotspot_service` estima por defecto la vida con una recta de pendiente única m = 3; con `use_trilinear_ec3=True` usa la curva trilineal de EN 1993-1-9.
 - Los K_t de `notch_stress` son ajustes propios del paquete por tipo de cordón, no las tablas de IIW; las categorías de entalla asignadas a AISC, AS y NSR son equivalencias del paquete.
 - Los factores ambientales de `corrosion` son orientativos. Para proyecto, usar las curvas en agua de mar de la norma aplicable.
-- `paris_law`: Y constante, sin umbral ΔK_th ni efecto de la relación de tensiones R; la C por defecto es la cota superior de Barsom-Rolfe para aceros ferrítico-perlíticos.
+- `paris_law`: Y constante y sin efecto de la relación de tensiones R; el umbral `delta_K_th_MPa_sqrt_m` vale 0 por defecto (sin umbral); la C por defecto es la cota superior de Barsom-Rolfe para aceros ferrítico-perlíticos.
 - `lowcycle.CoffinMansonRBS` convierte rotación plástica en deformación con un factor geométrico constante (0,5 por defecto); los parámetros por defecto son los de A992.
-- `multiaxial.critical_plane_search` toma ε = σ/E en el plano normal (elástico), sin componente de cortante.
+- `multiaxial.critical_plane_search` toma ε = σ/E en el plano normal (elástico) para SWT; con `include_shear=True` añade Findley (k = 0,30 por defecto) y Brown-Miller con Δγ = Δτ/G, también elásticos. Cada criterio se maximiza en su propio plano: hasta la 1.1.0 Findley y Brown-Miller se evaluaban en el plano de SWT (110 MPa → 65,4 MPa en el test de regresión).
 - `sn_curves.FatigueEvaluator` es la implementación heredada de pendiente única sin codo ni cut-off; para EN 1993-1-9 usa `ec3_sn`.
-- `gusset_rbs` duplica UFM y Coffin-Manson con fórmulas simplificadas por compatibilidad; las versiones de referencia están en `lowcycle`.
+- `gusset_rbs` duplica UFM y Coffin-Manson con fórmulas simplificadas por compatibilidad; las versiones de referencia están en `lowcycle`. Por defecto `FatigueRBS` toma (ε_p/ε_f)^(1/c) como N_f, que en la ecuación de Coffin-Manson son inversiones (2N_f): da la mitad del daño que `lowcycle`, del lado inseguro. `use_half_reversals=True` o un σ′_f > 0 (Basquin) cuentan en ciclos.
 - EN 1993-1-10: T_Ed se simplifica al término dominante T₀ − ΔT_r; los demás términos del Anexo A y la Tabla 2.1 completa no están en el paquete.
 
 ## Normas y referencias

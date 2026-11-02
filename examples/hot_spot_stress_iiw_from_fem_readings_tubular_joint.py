@@ -31,6 +31,12 @@ def main() -> None:
                                      method=method, sigma_5t_half=s5, gamma_mf=1.15)
             print(f"FAT {fat:.0f} ({label}), {method:<9}: σ_hs = {r.sigma_hot_spot_MPa:6.1f} MPa, "
                   f"N ≈ {r.estimated_life_cycles:.2e} ciclos (γ_Mf = 1,15, recta m = 3)")
+    r3 = run_hotspot_analysis(SIGMA_T2, SIGMA_3T2, T_MM, weld_type="fillet", fat_class=90.0, gamma_mf=1.15)
+    rt = run_hotspot_analysis(SIGMA_T2, SIGMA_3T2, T_MM, weld_type="fillet", fat_class=90.0, gamma_mf=1.15,
+                              use_trilinear_ec3=True)
+    print(f"\nFAT 90 lineal con la curva trilineal de EN 1993-1-9 (use_trilinear_ec3=True): N ≈ {rt.estimated_life_cycles:.2e} "
+          f"frente a {r3.estimated_life_cycles:.2e} con la recta m = 3 "
+          f"({'iguales: el rango está por encima del codo de 5·10⁶' if abs(rt.estimated_life_cycles / r3.estimated_life_cycles - 1) < 1e-9 else 'distintas: el rango cae por debajo del codo'})")
 
 
 if __name__ == "__main__":

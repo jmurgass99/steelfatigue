@@ -7,3 +7,8 @@ Mismo plano con amplitudes de deformación crecientes (daño plástico):
   ε_a = 0.0015 → N_f = 9.274e+06
   ε_a = 0.0030 → N_f = 4.310e+05
   ε_a = 0.0060 → N_f = 3.797e+04
+
+Con include_shear=True cada criterio busca su propio plano (elástico, Δγ = Δτ/G):
+  SWT          θ =   0.0°  P_SWT = 0.0720 MPa
+  Findley      θ =   0.0°  P_F = τ_a + 0,30·σ_n,max = 96.0 MPa (τ_a = 60.0 MPa)
+  Brown-Miller θ =   0.0°  P_BM = Δγ/2 + Δε_n = 1.980e-03

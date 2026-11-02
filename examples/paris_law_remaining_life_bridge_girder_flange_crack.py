@@ -39,6 +39,15 @@ def main() -> None:
     print("\nLa mitad de la vida se consume mientras la grieta es menor de "
           f"{next(a for N, a in res.a_vs_N if N >= res.N_cycles/2):.1f} mm: detectarla pronto es lo que cuenta.")
 
+    dK_th = 2.0   # MPa·√m, valor de cálculo habitual para acero (BS 7910) — supuesto del ejemplo
+    print(f"\nUmbral ΔK_th = {dK_th} MPa·√m (delta_K_th_MPa_sqrt_m):")
+    for ds in (DELTA_SIGMA, 20.0):
+        dK0 = Y * ds * math.sqrt(math.pi * A_INITIAL_MM / 1000.0)
+        r = integrate_paris(ParisInput(a_initial_mm=A_INITIAL_MM, a_critical_mm=a_c_mm, delta_sigma_MPa=ds, Y=Y,
+                                       n_increments=400, delta_K_th_MPa_sqrt_m=dK_th))
+        print(f"  Δσ = {ds:4.0f} MPa: ΔK inicial = {dK0:.2f} MPa·√m → N = {r.N_cycles:.3e} ciclos"
+              + (" (por debajo del umbral: la grieta no crece)" if dK0 <= dK_th else ""))
+
 
 if __name__ == "__main__":
     main()

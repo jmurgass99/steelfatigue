@@ -13,3 +13,7 @@ Crecimiento de la grieta (N acumulado → a):
        1256064 ciclos (  0.8 años) → a = 35.86 mm
 
 La mitad de la vida se consume mientras la grieta es menor de 5.3 mm: detectarla pronto es lo que cuenta.
+
+Umbral ΔK_th = 2.0 MPa·√m (delta_K_th_MPa_sqrt_m):
+  Δσ =   80 MPa: ΔK inicial = 7.10 MPa·√m → N = 1.279e+06 ciclos
+  Δσ =   20 MPa: ΔK inicial = 1.78 MPa·√m → N = inf ciclos (por debajo del umbral: la grieta no crece)

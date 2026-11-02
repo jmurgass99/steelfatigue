@@ -35,6 +35,14 @@ def main() -> None:
     print(f"\nVersión vectorizada: {len(ranges)} entradas, rango máximo {ranges.max():.1f}, "
           f"Σ counts = {counts.sum():.1f}")
 
+    exact = rainflow_count(ASTM_SIGNAL, use_float64_exact=True)
+    by_range_x = Counter()
+    for c in exact:
+        by_range_x[round(c.range)] += c.count
+    print(f"Conteo exacto en float64 (use_float64_exact=True): {sum(by_range_x.values()):.1f} ciclos; "
+          f"{'coincide' if dict(by_range_x) == dict(by_range) else 'NO coincide'} con fatpack en esta señal de enteros "
+          f"(los rangos redondeados al entero; la cuantización en 64 niveles de fatpack aparece cuando los valores no caen en su malla)")
+
 
 if __name__ == "__main__":
     main()

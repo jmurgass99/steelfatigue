@@ -17,3 +17,4 @@ Rango → ciclos (paquete)  |  tabla ASTM E1049
 Total ciclos: paquete 4.0, ASTM 4.0
 
 Versión vectorizada: 7 entradas, rango máximo 9.0, Σ counts = 4.0
+Conteo exacto en float64 (use_float64_exact=True): 4.0 ciclos; coincide con fatpack en esta señal de enteros (los rangos redondeados al entero; la cuantización en 64 niveles de fatpack aparece cuando los valores no caen en su malla)
