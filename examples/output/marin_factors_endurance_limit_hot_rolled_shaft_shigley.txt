@@ -1,9 +1,0 @@
-Eje S_u = 620 MPa, d = 40 mm, confiabilidad 99 %
-
-laminado en caliente, flexión      ka=0.570 kb=0.836 kc=1.00 kd=0.999 ke=0.814  S_e' = 310 → S_e = 120.2 MPa
-mecanizado, flexión                ka=0.821 kb=0.836 kc=1.00 kd=0.999 ke=0.814  S_e' = 310 → S_e = 172.9 MPa
-rectificado, flexión               ka=0.915 kb=0.836 kc=1.00 kd=0.999 ke=0.814  S_e' = 310 → S_e = 192.8 MPa
-mecanizado, carga axial            ka=0.821 kb=1.000 kc=0.85 kd=0.999 ke=0.814  S_e' = 310 → S_e = 175.9 MPa
-mecanizado, torsión                ka=0.821 kb=0.836 kc=0.59 kd=0.999 ke=0.814  S_e' = 310 → S_e = 102.0 MPa
-mecanizado, flexión, 250 °C        ka=0.821 kb=0.836 kc=1.00 kd=1.000 ke=0.814  S_e' = 310 → S_e = 173.1 MPa
-mecanizado, flexión, conf. 50 %    ka=0.821 kb=0.836 kc=1.00 kd=0.999 ke=1.000  S_e' = 310 → S_e = 212.5 MPa
