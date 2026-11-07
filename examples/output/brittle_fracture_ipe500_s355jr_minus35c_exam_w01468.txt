@@ -1,7 +1,0 @@
-σ_Ed = 207.46 N/mm² (M = 400 kN·m, W_el,y = 1928.1 cm³)
-T_Ed = -40 °C (T₀ = -35 °C, ΔT_r = 5 °C)
-f_y(t) = 351.0 N/mm² (f_y − 0,25·t, Anexo B)
-
-σ_Ed / f_y(t) = 0.591
-t_max admisible (interpolado en la tabla S355JR, T_Ed = -40 °C) = 21.4 mm
-t_f = 16.0 mm  →  VERIFICA

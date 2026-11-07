@@ -1,8 +1,0 @@
-Ventana de 10 min: 2382 ciclos rainflow, Δσ máx = 44.7 MPa, Σn = 2376.5
-Extrapolación a 20 años: 1051200 ventanas, Σn = 2.498e+09 ciclos
-
-Δσ_eq (m = 3, N_ref = 1e+07, 20 años) = 61.24 MPa
-Daño del espectro completo (recta m = 3, sin cut-off) = 3.2077
-Daño del bloque equivalente                          = 3.2077  (diferencia relativa 6.7e-16)
-
-Mismo espectro con la curva trilineal EN 1993-1-9 (FAT 71, γ_Mf = 1): D = 0.3599; 2373 de 2382 niveles quedan bajo el cut-off y no dañan.
